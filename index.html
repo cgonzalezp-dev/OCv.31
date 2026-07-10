@@ -1266,7 +1266,7 @@ function renderHome(){
   const list = document.getElementById('homeFeed');
   const lbl = document.getElementById('homeFeedLbl');
   let data = [...registros];
-  if(homeFilter==='hoy'){ const h=hoyStr(); data=data.filter(r=>r.fecha&&r.fecha.startsWith(h)); }
+  if(homeFilter==='hoy'){ const h=hoyStr(); data=data.filter(r=>r.fecha&&fechaDiaCol(r.fecha)===h); }
   else if(homeFilter==='gasto') data=data.filter(r=>r.tipo==='gasto');
   else if(homeFilter==='ingreso') data=data.filter(r=>r.tipo==='ingreso');
   if(data.length===0){
@@ -1304,6 +1304,14 @@ function fechaDiaCol(iso){
   if(!iso) return 'sin-fecha';
   const d = new Date(new Date(iso).getTime() - 5*3600000);
   return d.toISOString().slice(0,10);
+}
+// Convierte el valor de un <input datetime-local> (que representa hora
+// Colombia) a ISO UTC de forma DETERMINÍSTICA, sin depender de la zona
+// horaria configurada en el dispositivo. Evita los desfases de +5h/+10h
+// que ocurrían al parsear con new Date(raw) o al sumar 5h manualmente.
+function fechaLocalAIso(raw){
+  if(!raw) return new Date().toISOString();
+  return new Date(raw.slice(0,16) + ':00-05:00').toISOString();
 }
 // 'Hoy' / 'Ayer' / '20 jun'
 function etiquetaDia(key){
@@ -1370,7 +1378,7 @@ function updateStats(){
   const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const mesLabel = MESES_ES[mesDate.getUTCMonth()] + ' ' + mesDate.getUTCFullYear();
   document.getElementById('balanceMesLbl').textContent = 'Balance ' + mesLabel;
-  const mesData = registros.filter(r=>r.fecha&&r.fecha.startsWith(mes));
+  const mesData = registros.filter(r=>r.fecha&&fechaDiaCol(r.fecha).slice(0,7)===mes);
   const ingresos = mesData.filter(r=>r.tipo==='ingreso');
   const gastos = mesData.filter(r=>r.tipo==='gasto');
   const totalIn = ingresos.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
@@ -1396,7 +1404,7 @@ function updateStats(){
 function updateGamify(){
   if(!gamify.xp) gamify={xp:0,level:1,streak:0,lastDate:'',saved:0,goals:0,name:'Cristian'};
   const hoy = hoyStr();
-  if(gamify.lastDate!==hoy && registros.some(r=>r.fecha&&r.fecha.startsWith(hoy))){
+  if(gamify.lastDate!==hoy && registros.some(r=>r.fecha&&fechaDiaCol(r.fecha)===hoy)){
     const ayer = new Date(Date.now()-86400000).toISOString().slice(0,10);
     if(gamify.lastDate===ayer) gamify.streak++; else gamify.streak=1;
     gamify.lastDate=hoy; gamify.xp+=10;
@@ -1669,8 +1677,8 @@ function renderMetas(){
   const list = document.getElementById('metasList');
   if(metas.length===0){ list.innerHTML='<div class="empty-state"><div class="icon">🎯</div><h3>Sin metas</h3><p>Crea tu primera meta de ahorro o límite de gasto.</p></div>'; return; }
   const mes = nowCol().toISOString().slice(0,7);
-  const mesGastos = registros.filter(r=>r.fecha&&r.fecha.startsWith(mes)&&r.tipo==='gasto').reduce((a,b)=>a+(parseInt(b.monto)||0),0);
-  const mesIngresos = registros.filter(r=>r.fecha&&r.fecha.startsWith(mes)&&r.tipo==='ingreso').reduce((a,b)=>a+(parseInt(b.monto)||0),0);
+  const mesGastos = registros.filter(r=>r.fecha&&fechaDiaCol(r.fecha).slice(0,7)===mes&&r.tipo==='gasto').reduce((a,b)=>a+(parseInt(b.monto)||0),0);
+  const mesIngresos = registros.filter(r=>r.fecha&&fechaDiaCol(r.fecha).slice(0,7)===mes&&r.tipo==='ingreso').reduce((a,b)=>a+(parseInt(b.monto)||0),0);
   list.innerHTML = metas.map((m,i)=>{
     let actual = m.tipo==='ahorro'?Math.max(0,mesIngresos-mesGastos):mesGastos;
     let pct = Math.min(100, Math.round(actual/m.monto*100));
@@ -1718,7 +1726,10 @@ function numpadClear(){ tempAmount=0; document.getElementById('displayAmount').t
 function confirmAmount(){
   if(tempAmount<=0){ toast('Ingresa un monto'); return; }
   show('drawerAdd');
-  document.getElementById('addFecha').value = new Date().toISOString().slice(0,16);
+  // Prefill con hora COLOMBIA (antes usaba UTC crudo: el campo mostraba
+  // 5h adelantado y al guardar se sumaban otras 5h → gastos de la noche
+  // quedaban guardados como del día siguiente)
+  document.getElementById('addFecha').value = new Date(Date.now() - 5*3600000).toISOString().slice(0,16);
   fillCatSelect('addCat', 'otros');
   actualizarSubcatAdd();
 }
@@ -1823,7 +1834,7 @@ async function finalizarCatGrid(cat, subcat){
   const desc = document.getElementById('addDesc').value.trim();
   const banco = document.getElementById('addBanco').value.trim();
   const fechaRaw = document.getElementById('addFecha').value;
-  const fecha = fechaRaw ? new Date(fechaRaw).toISOString() : new Date().toISOString();
+  const fecha = fechaLocalAIso(fechaRaw);
   cerrarCatGrid();
   try{
     const obj = { monto:tempAmount, descripcion:desc, banco:banco||'Manual', categoria:cat, subcategoria:subcat, tipo:tempTipo, origen:'manual', fecha };
@@ -1850,7 +1861,7 @@ async function _ejecutarGuardarManual(){
   const cat = getCatVal('addCat');
   const subcat = getSubcatVal('addSubcat');
   const fechaRaw = document.getElementById('addFecha').value;
-  const fecha = fechaRaw ? new Date(fechaRaw).toISOString() : new Date().toISOString();
+  const fecha = fechaLocalAIso(fechaRaw);
   try{
     const obj = { monto:tempAmount, descripcion:desc, banco:banco||'Manual', categoria:cat, subcategoria:subcat, tipo:tempTipo, origen:'manual', fecha };
     await insertarRec(obj);
@@ -1899,8 +1910,10 @@ async function guardarEdit(){
     categoria: getCatVal('editCat'),
     subcategoria: getSubcatVal('editSubcat')
   };
-  // Convertir de hora Colombia (UTC-5) a UTC para guardar en Supabase
-  if(fechaRaw) changes.fecha = new Date(new Date(fechaRaw).getTime() + 5*3600000).toISOString();
+  // Parse determinístico como hora Colombia — antes se parseaba con
+  // new Date(fechaRaw) (que ya convierte a UTC en un iPhone en Bogotá)
+  // y se sumaban 5h ADICIONALES: cada edición corría la fecha +5h.
+  if(fechaRaw) changes.fecha = fechaLocalAIso(fechaRaw);
   try{
     await editarRec(id, changes);
     hide('drawerEdit');
@@ -2322,7 +2335,7 @@ function guardarMesActual(){
   const mes = mesDate.toISOString().slice(0,7);
   const MESES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const mesLabel = MESES_ES[mesDate.getUTCMonth()] + ' ' + mesDate.getUTCFullYear();
-  const mesData = registros.filter(r=>r.fecha&&r.fecha.startsWith(mes));
+  const mesData = registros.filter(r=>r.fecha&&fechaDiaCol(r.fecha).slice(0,7)===mes);
   if(mesData.length===0){ toast('No hay datos del mes actual'); return; }
   const gastos = mesData.filter(r=>r.tipo==='gasto');
   const ingresos = mesData.filter(r=>r.tipo==='ingreso');
@@ -2929,7 +2942,7 @@ async function guardarAdvAuditEdit(){
     subcategoria: getSubcatVal('advEditSubcat'),
     tipo: document.getElementById('advEditTipo').value
   };
-  if(fechaRaw) changes.fecha = new Date(new Date(fechaRaw).getTime() + 5*3600000).toISOString();
+  if(fechaRaw) changes.fecha = fechaLocalAIso(fechaRaw);
   try{
     await editarRec(id, changes); // editarRec sanitizes via COLS_GASTOS
     // Update local advAuditResultados
