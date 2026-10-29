@@ -581,6 +581,109 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
 .ipk{aspect-ratio:1;border-radius:14px;border:.5px solid var(--gline);background:var(--glass);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .ipk.on{background:var(--grad-primary);border-color:transparent;}
 </style>
+<style id="oc-plus-css">
+/* ===== Opti-Cash+ (períodos, búsqueda, etiquetas, registro rápido, voz) ===== */
+.oc-period{display:flex;gap:4px;margin-bottom:10px;}
+.oc-per{flex:1;min-width:0;border-radius:18px;padding:9px 6px;text-align:center;background:none;border:.5px solid transparent;color:var(--text-3);font-family:inherit;cursor:pointer;transition:background .2s;}
+.oc-per.on{background:var(--glass2);border-color:var(--gline);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);color:#fff;}
+.oc-per .p-l{font-size:12px;font-weight:600;}
+.oc-per .p-d{font-size:11px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.oc-per .p-v{font-size:13px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums;}
+.oc-per:disabled{opacity:.35;cursor:default;}
+.oc-seg{display:inline-flex;padding:3px;border-radius:14px;background:rgba(0,0,0,.22);}
+.oc-seg button{border:none;border-radius:11px;padding:5px 11px;font-family:inherit;font-size:12px;font-weight:600;background:none;color:var(--text-2);cursor:pointer;}
+.oc-seg button.on{background:rgba(255,255,255,.18);color:#fff;}
+.oc-seg.big{display:flex;width:100%;}
+.oc-seg.big button{flex:1;height:36px;font-size:14px;}
+.oc-seg.big button.on.gasto{background:rgba(255,69,58,.85);}
+.oc-seg.big button.on.ingreso{background:rgba(48,209,88,.8);}
+.oc-balhead{display:flex;justify-content:flex-end;margin-bottom:8px;}
+body.oc-hide-in .balance-col.income,body.oc-hide-in .balance-bar,body.oc-hide-in .balance-pct,body.oc-hide-in #homePills .pill:nth-child(4){display:none;}
+body.oc-hide-in .balance-row{grid-template-columns:1fr;}
+.oc-tag{color:#C9C7FF;font-weight:600;}
+.oc-chiprow{display:flex;gap:8px;flex-wrap:wrap;}
+.oc-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 -18px;padding-left:18px;padding-right:18px;scrollbar-width:none;}
+.oc-scroll::-webkit-scrollbar{display:none;}
+.oc-chip{height:36px;padding:0 13px;border-radius:18px;background:var(--glass);border:.5px solid var(--gline);color:#fff;font-family:inherit;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;cursor:pointer;flex-shrink:0;}
+.oc-chip.on{background:var(--grad-primary);border-color:transparent;}
+.oc-chip.tag.on{background:rgba(179,177,255,.30);}
+.oc-chip select{appearance:none;-webkit-appearance:none;background:none;border:none;color:#fff;font:inherit;padding:0 2px;outline:none;}
+.oc-chip select option{color:#000;}
+.oc-catchip{height:44px;padding:0 14px 0 6px;border-radius:22px;}
+.oc-catchip .cd{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.oc-catchip.on .cd{background:rgba(255,255,255,.2);}
+.oc-lbl{font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;display:block;}
+.oc-bigin{display:block;width:100%;box-sizing:border-box;background:none;border:none;border-bottom:1px solid rgba(179,177,255,.6);color:#fff;font-family:inherit;font-size:26px;font-weight:700;letter-spacing:-.4px;padding:6px 0 10px;outline:none;border-radius:0;}
+.oc-bigin::placeholder{color:var(--text-3);font-weight:600;}
+.oc-prev{border-radius:18px;background:var(--glass);border:.5px solid var(--gline);padding:10px 14px;}
+.oc-prev .ph{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#C9C7FF;margin-bottom:2px;}
+.oc-prev .pr{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:4px 0;}
+.oc-prev .pr span:first-child{color:var(--text-2);}
+.oc-prev .pr span:last-child{font-weight:600;text-align:right;}
+.oc-prev .warn{color:#FFD60A;font-size:12px;margin-top:4px;}
+.oc-quick{display:flex;flex-direction:column;gap:16px;}
+.oc-qhead{display:flex;align-items:center;justify-content:space-between;}
+.oc-qhead h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.3px;}
+.oc-qhead p{font-size:13px;color:var(--text-2);margin:0;}
+.oc-icbtn{width:44px;height:44px;border-radius:50%;background:var(--glass2);border:.5px solid var(--gline);color:#fff;font-size:19px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.oc-link{background:none;border:none;color:var(--text-2);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px;text-decoration:underline;text-underline-offset:3px;}
+/* Búsqueda */
+.oc-sbox{height:50px;border-radius:25px;background:var(--glass2);border:.5px solid var(--gline);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);display:flex;align-items:center;gap:10px;padding:0 8px 0 16px;margin-bottom:12px;}
+.oc-sbox .ico{font-size:19px;color:var(--text-2);}
+.oc-sbox input{flex:1;min-width:0;background:none;border:none;outline:none;color:#fff;font-family:inherit;font-size:17px;font-weight:600;}
+.oc-sbox input::placeholder{color:var(--text-3);font-weight:500;}
+.oc-sbox .oc-icbtn{width:34px;height:34px;font-size:15px;background:rgba(255,255,255,.18);border:none;}
+.oc-range{display:flex;align-items:center;gap:10px;border-radius:18px;background:var(--glass);border:.5px solid var(--gline);padding:10px 14px;margin:12px 0;}
+.oc-range label{font-size:11px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;display:block;}
+.oc-range input{background:none;border:none;color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:2px 0;outline:none;color-scheme:dark;width:100%;}
+.oc-range > div{flex:1;min-width:0;}
+.oc-sum{display:flex;justify-content:space-between;align-items:baseline;padding:2px 6px 10px;}
+.oc-sum span:first-child{font-size:14px;color:var(--text-2);}
+.oc-sum span:last-child{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;}
+.oc-sr{display:flex;flex-direction:column;gap:10px;}
+/* Voz pantalla completa */
+.oc-voz{position:fixed;inset:0;z-index:400;display:none;flex-direction:column;color:#fff;overflow:hidden;background:#6B2460;}
+.oc-voz.open{display:flex;animation:fadeIn .25s ease;}
+.oc-voz .vb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.9;pointer-events:none;}
+.oc-voz .vb1{width:360px;height:360px;left:-120px;top:-90px;background:#BF5AF2;}
+.oc-voz .vb2{width:320px;height:320px;right:-140px;top:38%;background:#FF375F;}
+.oc-voz .vb3{width:300px;height:300px;left:-40px;bottom:-120px;background:#FF9F0A;}
+.oc-voz::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.18);pointer-events:none;}
+.oc-voz > .vc{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;}
+.oc-vtop{padding:calc(env(safe-area-inset-top) + 18px) 20px 0;display:flex;justify-content:space-between;align-items:center;}
+.oc-vstat{font-size:13px;font-weight:600;color:var(--text-2);display:flex;align-items:center;gap:8px;}
+.oc-vstat .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);}
+.oc-voz.listening .oc-vstat .dot{background:#FF6961;animation:ocPulse 1.2s infinite;}
+.oc-vmid{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 30px;text-align:center;gap:22px;}
+.oc-vprompt{font-size:17px;font-weight:600;color:var(--text-2);}
+.oc-vtxt{font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1.2;min-height:34px;}
+.oc-wave{display:flex;align-items:center;gap:4px;height:70px;}
+.oc-wave i{width:5px;height:8px;border-radius:3px;background:rgba(255,255,255,.75);transition:height .2s;}
+.oc-voz.listening .oc-wave i{animation:ocWave 1s ease-in-out infinite;}
+.oc-vchips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+.oc-vchips span{height:34px;padding:0 12px;border-radius:17px;background:var(--glass);border:.5px solid var(--gline);display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;}
+.oc-vbot{padding:0 28px calc(env(safe-area-inset-bottom) + 36px);display:flex;justify-content:space-between;align-items:center;}
+.oc-vbtn{width:64px;height:64px;border-radius:50%;border:.5px solid rgba(255,255,255,.22);background:rgba(255,255,255,.16);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.oc-vbtn.ok{border:none;background:var(--grad-primary);box-shadow:0 10px 24px rgba(94,92,230,.45);}
+.oc-vbtn.ok:disabled{opacity:.4;box-shadow:none;}
+.oc-vbtn.mic{width:84px;height:84px;font-size:30px;background:rgba(255,255,255,.12);box-shadow:0 0 0 12px rgba(255,255,255,.06);}
+.oc-voz.listening .oc-vbtn.mic{background:rgba(255,105,97,.35);}
+.oc-vlang{height:38px;padding:0 12px;border-radius:19px;background:var(--glass);border:.5px solid var(--gline);display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;}
+.oc-vlang select{appearance:none;-webkit-appearance:none;background:none;border:none;color:#fff;font:inherit;outline:none;}
+.oc-vlang select option{color:#000;}
+@keyframes ocPulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes ocWave{0%,100%{height:8px}50%{height:var(--h,40px)}}
+.oc-tagrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:.5px solid var(--gline);}
+.oc-tagrow:last-child{border-bottom:none;}
+.oc-tagrow button{background:none;border:none;color:var(--text-2);cursor:pointer;font-size:18px;padding:6px;}
+.oc-srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:.5px solid var(--gline);}
+.oc-srow:last-child{border-bottom:none;}
+.oc-srow .t{flex:1;min-width:0;}
+.oc-srow .t b{display:block;font-size:15px;font-weight:600;}
+.oc-srow .t small{display:block;font-size:12px;color:var(--text-2);line-height:1.35;}
+.oc-sel{background:rgba(255,255,255,.10);border:.5px solid var(--gline);color:#fff;border-radius:12px;font-family:inherit;font-size:14px;font-weight:600;padding:8px 10px;}
+.oc-sel option{color:#000;}
+</style>
 </head>
 <body data-theme="day">
 <div class="amb" id="amb" aria-hidden="true"><i id="ab1"></i><i id="ab2"></i><i id="ab3"></i></div>
@@ -592,7 +695,8 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
     <div class="tb-row">
       <div class="wordmark"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 9.6v4.8M10.6 10.8h2.2a.9.9 0 0 1 0 1.8h-1.6a.9.9 0 0 0 0 1.8h2.2"/><ellipse cx="12" cy="12" rx="10" ry="4.6" transform="rotate(-28 12 12)"/></svg><span>Opti-Cash</span></div>
       <div class="tb-actions">
-        <button class="tb-btn" onclick="toggleVoice()" aria-label="Registrar por voz"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>
+        <button class="tb-btn" onclick="irA('buscar')" aria-label="Buscar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg></button>
+        <button class="tb-btn" onclick="abrirVozFull(true)" aria-label="Registrar por voz"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>
         <button class="tb-btn" onclick="irA('programados')" aria-label="Programados"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>
         <button class="tb-btn" onclick="irA('config')" aria-label="Configuración"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
       </div>
@@ -623,7 +727,9 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
     <div class="streak-card link" onclick="irA('metas')"><div class="icon"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg></div><div class="num" id="streakGoals">0</div><div class="lbl">Metas ›</div></div>
   </div>
 
+  <div class="oc-period" id="ocPeriodBar"></div>
   <div class="balance-card" id="balanceCard">
+    <div class="oc-balhead"><div class="oc-seg" role="group" aria-label="Período del balance"><button id="ocSegCiclo" class="on" onclick="ocSetAcum(false)">Ciclo</button><button id="ocSegAcum" onclick="ocSetAcum(true)">Acumulado</button></div></div>
     <div class="neto">
       <span class="neto-lbl" id="balanceMesLbl">Balance</span>
       <span class="neto-val pos" id="netoVal">+$0</span>
@@ -746,6 +852,23 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
     <p>Como en Órbita: Aurora de 6:00 a 18:00 y Grafito vivo el resto del día, según la hora de Colombia.</p>
     <div class="form-group" style="margin-bottom:0;"><label>Tema</label><select id="cfgTema" onchange="cambiarTema(this.value)"><option value="auto">Automático según la hora</option><option value="day">Siempre Aurora</option><option value="night">Siempre Grafito vivo</option></select></div>
   </div>
+  <!-- Opti-Cash+: período, vista, etiquetas y voz -->
+  <div class="config-card">
+    <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg> Período y vista</h3>
+    <p>Segmenta tus datos por ciclo de pago en lugar del mes calendario.</p>
+    <div class="form-group"><label for="cfgCiclo">Período predeterminado</label><select id="cfgCiclo" onchange="ocSetCiclo(this.value)"></select></div>
+    <div class="toggle-row"><span class="label">Mostrar ingresos</span><div class="toggle-switch" id="cfgShowIn" role="switch" tabindex="0" aria-label="Mostrar ingresos" onclick="ocToggleShowIn()"></div></div>
+    <div class="toggle-row" style="margin-bottom:0;"><span class="label">Acumulado (total de todos los ciclos)</span><div class="toggle-switch" id="cfgAcum" role="switch" tabindex="0" aria-label="Acumulado" onclick="ocSetAcum(!ocAcum)"></div></div>
+  </div>
+  <div class="config-card">
+    <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4 8 20M16 4l-2 16M4.5 9h15M4 15h15"/></svg> Etiquetas</h3>
+    <p id="cfgTagsResumen">Agrupa movimientos con #etiquetas, por ejemplo #trabajo o #viaje.</p>
+    <button class="btn btn-secondary" onclick="ocAbrirTags()">Editar etiquetas</button>
+  </div>
+  <div class="config-card">
+    <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg> Voz</h3>
+    <div class="form-group" style="margin-bottom:0;"><label for="cfgVozLang">Idioma de entrada de voz</label><select id="cfgVozLang" onchange="ocVozLang(this.value)"><option value="es-CO">Español (Colombia)</option><option value="es-ES">Español (España)</option><option value="es-MX">Español (México)</option><option value="en-US">English (US)</option></select></div>
+  </div>
   <div class="config-card">
     <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.5 1.6 3.8 3.8 0 0 1-.4 7.4z"/></svg> Supabase</h3>
     <p>Conecta tu base de datos para sincronizar en la nube.</p>
@@ -764,6 +887,8 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
     <div class="form-group"><label>Divisa de ingresos</label><select id="cfgDivisaIn"><option value="COP">COP $</option><option value="USD">USD $</option><option value="EUR">EUR €</option></select></div>
     <div class="form-group"><label>Divisa de gastos</label><select id="cfgDivisaOut"><option value="COP" selected>COP $</option><option value="USD">USD $</option><option value="EUR">EUR €</option></select></div>
     <div class="toggle-row"><span class="label">Sin centavos</span><div class="toggle-switch" id="cfgNoCent" onclick="toggleNoCent()"></div></div>
+    <div class="toggle-row" style="margin-bottom:6px;"><span class="label">Conversión automática a COP</span><div class="toggle-switch" id="cfgAutoConv" role="switch" tabindex="0" aria-label="Conversión automática a COP" onclick="ocToggleAutoConv()"></div></div>
+    <p id="cfgFxInfo" style="margin-bottom:0;">Sin tasa descargada todavía.</p>
   </div>
   <div class="config-card">
     <h3><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg> Notificaciones</h3>
@@ -784,6 +909,7 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
       <button class="btn btn-primary" style="flex:1;padding:12px;font-size:13px;" onclick="guardarMesActual()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg> Guardar mes</button>
       <button class="btn btn-secondary" style="flex:1;padding:12px;font-size:13px;" onclick="exportarCSV()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19.5h14"/></svg> CSV</button>
     </div>
+    <button class="btn btn-secondary" style="margin-bottom:12px;padding:12px;font-size:13px;" onclick="ocAbrirImport()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5V4.5M7 9l5-5 5 5M4.5 19.5h15"/></svg> Importar CSV</button>
     <div id="archivoMeses"></div>
   </div>
 
@@ -841,6 +967,25 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
   </div>
 </div>
 
+<!-- ===== BUSCAR (Opti-Cash+) ===== -->
+<div id="sc-buscar" class="screen">
+  <div class="header-card"><button class="header-back" onclick="irA('home')" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1>Buscar</h1><p>En todo tu historial</p></div>
+  <div class="oc-sbox">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>
+    <label for="ocQ" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Buscar movimientos</label>
+    <input id="ocQ" type="search" placeholder="Descripción, categoría, #etiqueta o medio" autocomplete="off" oninput="ocBuscarDebounce()">
+    <button class="oc-icbtn" onclick="ocLimpiarBusqueda()" aria-label="Borrar búsqueda"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="oc-scroll" id="ocRangos" style="margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px;"></div>
+  <div class="oc-range" id="ocRangoBox" style="display:none;">
+    <div><label for="ocDesde">Desde</label><input type="date" id="ocDesde" onchange="ocBuscar()"></div>
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--text-2)"><path d="m9 6 6 6-6 6"/></svg>
+    <div><label for="ocHasta">Hasta</label><input type="date" id="ocHasta" onchange="ocBuscar()"></div>
+  </div>
+  <div class="oc-sum" id="ocSum" style="margin-top:12px;"></div>
+  <div class="oc-sr" id="ocResultados"></div>
+</div>
+
 <!-- ===== PROGRAMADOS ===== -->
 <div id="sc-programados" class="screen">
   <div class="header-card">
@@ -883,7 +1028,7 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
 <!-- ===== NAVBAR ===== -->
 <div class="navbar">
   <button class="nav-item active" data-screen="home" onclick="irA('home')"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5 12 4l8.5 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-6V20H4.5a1 1 0 0 1-1-1z"/></svg><span>Inicio</span></button>
-  <button class="nav-center" id="navAdd" onclick="abrirAdd()" aria-label="Agregar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+  <button class="nav-center" id="navAdd" onclick="abrirQuick()" aria-label="Agregar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
   <button class="nav-item" data-screen="analisis" onclick="irA('analisis')"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="11" width="3.5" height="8.5" rx="1.2"/><rect x="10.25" y="4.5" width="3.5" height="15" rx="1.2"/><rect x="16" y="8" width="3.5" height="11.5" rx="1.2"/></svg><span>Análisis</span></button>
 </div>
 <!-- El dictado por voz vive ahora en la barra superior de Inicio (sin botón flotante que tape montos) -->
@@ -922,6 +1067,103 @@ h1,h2,h3{font-weight:700;letter-spacing:-.3px;}
     <div class="btn-row">
       <button class="btn btn-secondary" onclick="cerrarDrawer('drawerAdd')">Cancelar</button>
       <button class="btn btn-primary" onclick="guardarManual()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTRO RÁPIDO (Opti-Cash+) ===== -->
+<div class="drawer" id="drawerQuick" onclick="if(event.target===this)cerrarDrawer('drawerQuick')">
+  <div class="drawer-panel oc-quick">
+    <div class="oc-qhead">
+      <div><h2>Registro rápido</h2><p>Escríbelo como lo dirías</p></div>
+      <button class="oc-icbtn" onclick="cerrarDrawer('drawerQuick')" aria-label="Cerrar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="oc-seg big" role="group" aria-label="Tipo de movimiento">
+      <button class="gasto on" id="qTipoG" onclick="ocQTipo('gasto')">Gasto</button>
+      <button class="ingreso" id="qTipoI" onclick="ocQTipo('ingreso')">Ingreso</button>
+    </div>
+    <div class="oc-chiprow">
+      <span class="oc-chip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+        <label for="qFecha" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Fecha</label>
+        <select id="qFecha" onchange="ocQFecha()"><option value="hoy">Hoy</option><option value="ayer">Ayer</option><option value="otra">Otra fecha</option></select></span>
+      <input type="date" id="qFechaOtra" class="oc-sel" style="display:none;color-scheme:dark;" aria-label="Elegir fecha" onchange="ocQRender()">
+      <span class="oc-chip"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2.5 20.5 6 17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5"/><path d="M7 21.5 3.5 18 7 14.5"/><path d="M20.5 13v1.5a3.5 3.5 0 0 1-3.5 3.5H3.5"/></svg>
+        <label for="qFrec" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Frecuencia</label>
+        <select id="qFrec" onchange="ocQRender()"><option value="una">Una vez</option><option value="diario">Diario</option><option value="semanal">Semanal</option><option value="quincenal">Quincenal</option><option value="mensual">Mensual</option></select></span>
+    </div>
+    <div>
+      <label class="oc-lbl" for="qText">Descripción y monto</label>
+      <input id="qText" class="oc-bigin" type="text" autocomplete="off" placeholder="Ej: Almuerzo 25 mil #trabajo" oninput="ocQRender()" onkeydown="if(event.key==='Enter'){event.preventDefault();ocQGuardar();}">
+    </div>
+    <div class="oc-prev" id="qPrev"></div>
+    <div>
+      <span class="oc-lbl">Categoría</span>
+      <div class="oc-scroll" id="qCats"></div>
+    </div>
+    <div>
+      <span class="oc-lbl">Etiquetas</span>
+      <div class="oc-chiprow" id="qTags"></div>
+    </div>
+    <button class="btn btn-primary" id="qGuardarBtn" onclick="ocQGuardar()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg> Guardar</button>
+    <div style="display:flex;justify-content:center;gap:12px;margin-top:-8px;">
+      <button class="oc-link" onclick="cerrarDrawer('drawerQuick');abrirAdd();">Usar teclado numérico</button>
+      <button class="oc-link" onclick="cerrarDrawer('drawerQuick');abrirVozFull(true);">Dictar por voz</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ETIQUETAS (Opti-Cash+) ===== -->
+<div class="drawer" id="drawerTags" onclick="if(event.target===this)cerrarDrawer('drawerTags')">
+  <div class="drawer-panel">
+    <div class="drawer-title">Etiquetas</div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Escribe #etiqueta en cualquier descripción. Las favoritas aparecen como accesos rápidos al registrar.</p>
+    <div class="form-group" style="display:flex;gap:8px;align-items:flex-end;">
+      <div style="flex:1;"><label for="tagNueva">Nueva favorita</label><input type="text" id="tagNueva" placeholder="trabajo" onkeydown="if(event.key==='Enter')ocTagAgregar()"></div>
+      <button class="btn btn-primary" style="width:auto;padding:13px 18px;" onclick="ocTagAgregar()">Agregar</button>
+    </div>
+    <span class="oc-lbl">Favoritas</span>
+    <div id="tagFavs" style="margin-bottom:16px;"></div>
+    <span class="oc-lbl">En tus registros (últimos 90 días)</span>
+    <div id="tagUsadas"></div>
+    <div class="btn-row"><button class="btn btn-secondary" onclick="cerrarDrawer('drawerTags')">Listo</button></div>
+  </div>
+</div>
+
+<!-- ===== IMPORTAR CSV (Opti-Cash+) ===== -->
+<div class="drawer" id="drawerImport" onclick="if(event.target===this)cerrarDrawer('drawerImport')">
+  <div class="drawer-panel">
+    <div class="drawer-title">Importar CSV</div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:12px;">Acepta el CSV que exporta Opti-Cash y archivos de Excel o Google Sheets guardados como CSV. Columnas reconocidas: fecha, descripción, monto, tipo, categoría y banco.</p>
+    <div class="form-group"><label for="impFile">Archivo</label><input type="file" id="impFile" accept=".csv,text/csv" onchange="ocImpLeer(this)"></div>
+    <div id="impPrev"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="cerrarDrawer('drawerImport')">Cancelar</button>
+      <button class="btn btn-primary" id="impBtn" onclick="ocImpConfirmar()" disabled>Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VOZ PANTALLA COMPLETA (Opti-Cash+) ===== -->
+<div class="oc-voz" id="ocVoz" role="dialog" aria-modal="true" aria-label="Registro por voz">
+  <i class="vb vb1"></i><i class="vb vb2"></i><i class="vb vb3"></i>
+  <div class="vc">
+    <div class="oc-vtop">
+      <span class="oc-vstat"><span class="dot"></span><span id="ocVStat">Toca el micrófono para hablar</span></span>
+      <span class="oc-vlang"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.6 5.3 3.6 8.5s-1.1 6.1-3.6 8.5c-2.5-2.4-3.6-5.3-3.6-8.5S9.5 5.9 12 3.5z"/></svg>
+        <label for="ocVLang" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Idioma de voz</label>
+        <select id="ocVLang" onchange="ocVozLang(this.value)"><option value="es-CO">Español (CO)</option><option value="es-ES">Español (ES)</option><option value="es-MX">Español (MX)</option><option value="en-US">English (US)</option></select></span>
+    </div>
+    <div class="oc-vmid">
+      <div class="oc-vprompt">Cuéntame el detalle de tu movimiento</div>
+      <div class="oc-vtxt" id="ocVTxt" aria-live="polite"></div>
+      <div class="oc-wave" id="ocWave" aria-hidden="true"></div>
+      <div class="oc-vchips" id="ocVChips"></div>
+      <button class="oc-link" id="ocVEdit" style="display:none;" onclick="ocVozEditar()">Revisar antes de guardar</button>
+    </div>
+    <div class="oc-vbot">
+      <button class="oc-vbtn" onclick="cerrarVozFull()" aria-label="Cancelar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button class="oc-vbtn mic" id="ocVMic" onclick="ocVozToggle()" aria-label="Hablar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg></button>
+      <button class="oc-vbtn ok" id="ocVOk" onclick="ocVozGuardar()" aria-label="Confirmar y guardar" disabled><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     </div>
   </div>
 </div>
@@ -3290,11 +3532,686 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if('Notification' in window && Notification.permission==='granted') programarNotis();
   const urlParams = new URLSearchParams(window.location.search);
   if(urlParams.get('voice') === '1'){
-    setTimeout(()=>{ toggleVoice(); }, 600);
+    setTimeout(()=>{ abrirVozFull(false); }, 600);
     if(window.history && window.history.replaceState){
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }
+});
+</script>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// Opti-Cash+ · períodos de pago, acumulado, mostrar ingresos,
+// etiquetas #, búsqueda global, registro rápido, voz a pantalla
+// completa, conversión automática de moneda e importación CSV.
+// Módulo aditivo: solo reemplaza renderHome, updateStats,
+// renderTxRow e irA; el resto del código original queda intacto.
+// ═══════════════════════════════════════════════════════════════
+Object.assign(IC, {
+  hash:'<path d="M10 4 8 20M16 4l-2 16M4.5 9h15M4 15h15"/>',
+  repeat:'<path d="M17 2.5 20.5 6 17 9.5"/><path d="M3.5 11V9.5A3.5 3.5 0 0 1 7 6h13.5"/><path d="M7 21.5 3.5 18 7 14.5"/><path d="M20.5 13v1.5a3.5 3.5 0 0 1-3.5 3.5H3.5"/>',
+  globe:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.4 3.6 5.3 3.6 8.5s-1.1 6.1-3.6 8.5c-2.5-2.4-3.6-5.3-3.6-8.5S9.5 5.9 12 3.5z"/>',
+  upload:'<path d="M12 15.5V4.5M7 9l5-5 5 5M4.5 19.5h15"/>'
+});
+const OC_MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const OC_MESES_L = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function ocLS(k, d){ try{ const v = localStorage.getItem(k); return v===null ? d : JSON.parse(v); }catch(e){ return d; } }
+function ocSave(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+// ─── Estado ───
+let ocCicloDia = Math.min(28, Math.max(1, parseInt(ocLS('oc_ciclo_dia', 1))||1));
+let ocPer = 0;                       // 0 = ciclo actual, -1 anterior, +1 próximo
+let ocAcum = !!ocLS('oc_acumulado', false);
+let ocShowIn = ocLS('oc_show_in', true) !== false;
+let ocTagsFav = ocLS('oc_tags', ['trabajo','hogar','viaje']);
+let ocAutoConv = ocLS('oc_autoconv', true) !== false;
+let ocVozLangV = ocLS('oc_voz_lang', 'es-CO');
+let ocAllTot = null;                 // totales de todo el historial (acumulado)
+
+// ─── Ciclos de pago ───
+function ocKeyDe(y, m, d){ const dt = new Date(Date.UTC(y, m, d)); return dt.toISOString().slice(0,10); }
+function ocRango(offset){
+  const hoy = nowCol(); let y = hoy.getUTCFullYear(), m = hoy.getUTCMonth();
+  if(hoy.getUTCDate() < ocCicloDia) m -= 1;
+  m += offset;
+  const ini = ocKeyDe(y, m, ocCicloDia);
+  const finD = new Date(Date.UTC(y, m+1, ocCicloDia) - 86400000);
+  const fin = finD.toISOString().slice(0,10);
+  const iD = new Date(ini+'T12:00:00Z');
+  let label, det;
+  if(ocCicloDia === 1){
+    label = OC_MESES_L[iD.getUTCMonth()];
+    det = String(iD.getUTCFullYear());
+  } else {
+    label = offset===0 ? 'Ciclo actual' : offset===-1 ? 'Ciclo anterior' : offset===1 ? 'Próximo ciclo' : OC_MESES_L[iD.getUTCMonth()];
+    det = `${iD.getUTCDate()} ${OC_MESES[iD.getUTCMonth()]} – ${finD.getUTCDate()} ${OC_MESES[finD.getUTCMonth()]}`;
+  }
+  return { ini, fin, label, det };
+}
+function ocEnRango(r, rg){ if(!r.fecha) return false; const k = fechaDiaCol(r.fecha); return k >= rg.ini && k <= rg.fin; }
+function ocTot(list){
+  let i=0, g=0, ni=0, ng=0;
+  list.forEach(r=>{ const v = parseInt(r.monto)||0; if(r.tipo==='ingreso'){ i+=v; ni++; } else { g+=v; ng++; } });
+  return { i, g, ni, ng };
+}
+// Los registros cargados cubren 90 días: no se ofrecen ciclos más antiguos que eso
+function ocMinPer(){ const lim = new Date(Date.now() - 88*86400000 - 5*3600000).toISOString().slice(0,10); let o = 0; while(o > -6 && ocRango(o-1).ini >= lim) o--; return o; }
+
+function ocRenderPeriodBar(){
+  const bar = document.getElementById('ocPeriodBar'); if(!bar) return;
+  if(ocAcum){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  const minP = ocMinPer();
+  bar.innerHTML = [ocPer-1, ocPer, ocPer+1].map(o=>{
+    const rg = ocRango(o); const t = ocTot(registros.filter(r=>ocEnRango(r, rg)));
+    const fuera = o < minP || o > 1;
+    const val = ocShowIn ? (t.i - t.g) : t.g;
+    const valStr = ocShowIn ? ((val>=0?'+':'−') + fmt(Math.abs(val))) : fmt(val);
+    return `<button class="oc-per ${o===ocPer?'on':''}" ${fuera?'disabled':''} onclick="ocIrPer(${o})" aria-pressed="${o===ocPer}">
+      <div class="p-l">${S(rg.label)}</div><div class="p-d">${S(rg.det)}</div><div class="p-v">${fuera?'—':valStr}</div></button>`;
+  }).join('');
+}
+function ocIrPer(o){ ocPer = o; updateStats(); renderHome(); }
+function ocSetAcum(v){
+  ocAcum = !!v; ocSave('oc_acumulado', ocAcum);
+  document.getElementById('cfgAcum')?.classList.toggle('on', ocAcum);
+  if(ocAcum) ocCargarAcumulado();
+  updateStats(); renderHome();
+}
+function ocToggleShowIn(){
+  ocShowIn = !ocShowIn; ocSave('oc_show_in', ocShowIn);
+  document.getElementById('cfgShowIn')?.classList.toggle('on', ocShowIn);
+  document.body.classList.toggle('oc-hide-in', !ocShowIn);
+  if(!ocShowIn && homeFilter==='ingreso') homeFilter='todos';
+  updateStats(); renderHome();
+}
+function ocSetCiclo(v){
+  ocCicloDia = Math.min(28, Math.max(1, parseInt(v)||1)); ocSave('oc_ciclo_dia', ocCicloDia);
+  ocPer = 0; updateStats(); renderHome();
+  toast(ocCicloDia===1 ? 'Período: mes calendario' : `Período: del ${ocCicloDia} al ${ocCicloDia-1} de cada mes`);
+}
+async function ocCargarAcumulado(){
+  if(!SUPABASE_URL || !SUPABASE_KEY){ ocAllTot = null; return; }
+  try{
+    let all = [], off = 0;
+    while(off < 50000){
+      const pg = await sbFetch('GET', `gastos?select=monto,tipo&order=fecha.desc&limit=1000&offset=${off}`);
+      all = all.concat(pg||[]); if(!pg || pg.length < 1000) break; off += 1000;
+    }
+    ocAllTot = ocTot(all);
+  }catch(e){ console.error('acumulado', e); ocAllTot = null; }
+  if(ocAcum) updateStats();
+}
+
+// ─── Reemplazo: balance por ciclo / acumulado ───
+updateStats = function(){
+  let t, lbl;
+  if(ocAcum){
+    t = ocAllTot || ocTot(registros);
+    lbl = ocAllTot ? 'Acumulado · todo el historial' : 'Acumulado · últimos 90 días';
+  } else {
+    const rg = ocRango(ocPer);
+    t = ocTot(registros.filter(r=>ocEnRango(r, rg)));
+    lbl = ocCicloDia===1 ? `Balance ${rg.label} ${rg.det}` : `Balance ${rg.det}`;
+  }
+  const neto = t.i - t.g;
+  document.getElementById('incomeVal').textContent = fmt(t.i);
+  document.getElementById('expenseVal').textContent = fmt(t.g);
+  document.getElementById('incomeCount').textContent = t.ni + ' regs';
+  document.getElementById('expenseCount').textContent = t.ng + ' regs';
+  const netoEl = document.getElementById('netoVal');
+  if(ocShowIn){
+    document.getElementById('balanceMesLbl').textContent = lbl;
+    netoEl.textContent = (neto>=0?'+':'−') + fmt(Math.abs(neto));
+    netoEl.className = 'neto-val ' + (neto>=0?'pos':'neg');
+  } else {
+    document.getElementById('balanceMesLbl').textContent = lbl.replace('Balance','Gastos');
+    netoEl.textContent = fmt(t.g);
+    netoEl.className = 'neto-val';
+  }
+  const total = t.i + t.g || 1;
+  const pIn = Math.round(t.i/total*100), pOut = 100 - pIn;
+  document.getElementById('barIncome').style.width = (t.i+t.g ? pIn : 50)+'%';
+  document.getElementById('barExpense').style.width = (t.i+t.g ? pOut : 50)+'%';
+  document.getElementById('pctIncome').textContent = (t.i+t.g ? pIn : 0)+'%';
+  document.getElementById('pctExpense').textContent = (t.i+t.g ? pOut : 0)+'%';
+  document.getElementById('ocSegCiclo')?.classList.toggle('on', !ocAcum);
+  document.getElementById('ocSegAcum')?.classList.toggle('on', ocAcum);
+  ocRenderPeriodBar();
+};
+
+// ─── Reemplazo: feed de inicio filtrado por ciclo ───
+renderHome = function(){
+  const list = document.getElementById('homeFeed'); if(!list) return;
+  let data = [...registros];
+  if(!ocAcum){ const rg = ocRango(ocPer); data = data.filter(r=>ocEnRango(r, rg)); }
+  if(!ocShowIn) data = data.filter(r=>r.tipo!=='ingreso');
+  if(homeFilter==='hoy'){ const h=hoyStr(); data=data.filter(r=>r.fecha&&fechaDiaCol(r.fecha)===h); }
+  else if(homeFilter==='gasto') data=data.filter(r=>r.tipo==='gasto');
+  else if(homeFilter==='ingreso') data=data.filter(r=>r.tipo==='ingreso');
+  if(data.length===0){
+    const msg = ocPer>0 ? 'Este ciclo aún no empieza.' : 'No hay movimientos en este período.';
+    list.innerHTML='<div class="empty-state"><div class="icon">'+ic('inbox')+'</div><h3>Sin registros</h3><p>'+msg+'</p></div>';
+    return;
+  }
+  const grupos = {}, orden = [];
+  data.forEach(r=>{ const key = fechaDiaCol(r.fecha); if(!grupos[key]){ grupos[key]=[]; orden.push(key); } grupos[key].push(r); });
+  list.innerHTML = orden.map(key=>{
+    const items = grupos[key]; let tot = 0;
+    items.forEach(r=>{ tot += (r.tipo==='ingreso'?1:-1)*(parseInt(r.monto)||0); });
+    return `<div class="day-group"><div class="day-hdr"><span class="d-lbl">${etiquetaDia(key)}</span><span class="d-tot ${tot>=0?'pos':'neg'}">${(tot>=0?'+':'-')+fmt(Math.abs(tot))}</span></div>${items.map(r=>renderTxRow(r)).join('')}</div>`;
+  }).join('');
+};
+
+// ─── Etiquetas ───
+const OC_TAG_RE = /#([\p{L}\p{N}_-]+)/gu;
+function ocTagsDe(txt){ return [...String(txt||'').matchAll(OC_TAG_RE)].map(m=>m[1].toLowerCase()); }
+function ocSinTags(txt){ return String(txt||'').replace(OC_TAG_RE,'').replace(/\s+/g,' ').trim(); }
+renderTxRow = function(r){
+  const isGasto = r.tipo==='gasto';
+  const icon = CAT_ICONS[r.categoria] || ic('wallet');
+  const dubious = r.origen==='auto' && esDudoso(r);
+  const catLbl = CAT_LABELS[r.categoria]||r.categoria||'';
+  const sub = r.subcategoria ? ' · '+S(r.subcategoria) : '';
+  const banco = r.banco ? ' · '+S(r.banco) : '';
+  const tags = ocTagsDe(r.descripcion);
+  const desc = ocSinTags(r.descripcion) || S(r.descripcion);
+  const tagHtml = tags.length ? ' · ' + tags.map(t=>`<span class="oc-tag">#${S(t)}</span>`).join(' ') : '';
+  return `<div class="tx-row ${dubious?'dubious':''}" onclick='abrirEdit("${r.id}")'>
+    <div class="r-ico ${isGasto?'gasto':'ingreso'}">${icon}</div>
+    <div class="r-info"><div class="r-desc">${S(desc)}</div><div class="r-meta">${catLbl}${sub}${tagHtml}${banco} ${r.origen==='auto'?'· '+ic('bot'):''}</div></div>
+    <div class="r-right"><div class="r-monto ${isGasto?'gasto':'ingreso'}">${isGasto?'-':'+'}${fmt(r.monto)}</div><div class="r-hora">${horaCol(r.fecha)}</div></div>
+  </div>`;
+};
+function ocAbrirTags(){ ocRenderTags(); show('drawerTags'); }
+function ocRenderTags(){
+  const fav = document.getElementById('tagFavs');
+  if(fav) fav.innerHTML = ocTagsFav.length ? ocTagsFav.map((t,i)=>`<div class="oc-tagrow"><span class="oc-tag">#${S(t)}</span><button onclick="ocTagQuitar(${i})" aria-label="Quitar #${S(t)} de favoritas">${ic('x')}</button></div>`).join('') : '<p style="font-size:13px;color:var(--text-3);">Sin favoritas.</p>';
+  const cnt = {};
+  registros.forEach(r=>ocTagsDe(r.descripcion).forEach(t=>{ cnt[t]=(cnt[t]||0)+1; }));
+  const us = Object.entries(cnt).sort((a,b)=>b[1]-a[1]);
+  const box = document.getElementById('tagUsadas');
+  if(box) box.innerHTML = us.length ? us.map(([t,n])=>`<div class="oc-tagrow"><span><span class="oc-tag">#${S(t)}</span> <span style="color:var(--text-3);font-size:13px;">${n} ${n===1?'registro':'registros'}</span></span><button onclick="ocBuscarTag('${S(t)}')" aria-label="Buscar #${S(t)}">${ic('search')}</button></div>`).join('') : '<p style="font-size:13px;color:var(--text-3);">Aún no has usado etiquetas.</p>';
+  const res = document.getElementById('cfgTagsResumen');
+  if(res && ocTagsFav.length) res.textContent = 'Favoritas: ' + ocTagsFav.slice(0,3).map(t=>'#'+t).join(', ') + (ocTagsFav.length>3 ? ` y ${ocTagsFav.length-3} más` : '');
+}
+function ocTagAgregar(){
+  const el = document.getElementById('tagNueva');
+  const t = String(el.value||'').replace(/^#+/,'').trim().toLowerCase().replace(/\s+/g,'-');
+  if(!t){ return; }
+  if(!/^[\p{L}\p{N}_-]+$/u.test(t)){ toast('Usa solo letras, números o guiones'); return; }
+  if(!ocTagsFav.includes(t)){ ocTagsFav.push(t); ocSave('oc_tags', ocTagsFav); }
+  el.value=''; ocRenderTags();
+}
+function ocTagQuitar(i){ ocTagsFav.splice(i,1); ocSave('oc_tags', ocTagsFav); ocRenderTags(); }
+function ocBuscarTag(t){ cerrarDrawer('drawerTags'); irA('buscar'); document.getElementById('ocQ').value = '#'+t; ocRango_='todo'; ocRenderRangos(); ocBuscar(); }
+
+// ─── Moneda: conversión automática ───
+let ocFx = ocLS('oc_fx', null); // {d:'YYYY-MM-DD', USD:4100, EUR:4500}
+async function ocCargarFx(force){
+  if(!ocAutoConv) return;
+  if(!force && ocFx && ocFx.d === hoyStr()) return;
+  try{
+    const [u, e] = await Promise.all([
+      fetch('https://open.er-api.com/v6/latest/USD').then(r=>r.json()),
+      fetch('https://open.er-api.com/v6/latest/EUR').then(r=>r.json())
+    ]);
+    if(u?.rates?.COP && e?.rates?.COP){ ocFx = { d: hoyStr(), USD: u.rates.COP, EUR: e.rates.COP }; ocSave('oc_fx', ocFx); }
+  }catch(err){ console.warn('fx', err); }
+  ocPintarFx();
+}
+function ocPintarFx(){
+  const el = document.getElementById('cfgFxInfo'); if(!el) return;
+  el.textContent = ocFx ? `Tasa del ${ocFx.d}: USD ${fmt(Math.round(ocFx.USD))} · EUR ${fmt(Math.round(ocFx.EUR))}` : 'Sin tasa descargada todavía.';
+}
+function ocToggleAutoConv(){
+  ocAutoConv = !ocAutoConv; ocSave('oc_autoconv', ocAutoConv);
+  document.getElementById('cfgAutoConv')?.classList.toggle('on', ocAutoConv);
+  if(ocAutoConv) ocCargarFx(true);
+}
+
+// ─── Intérprete de texto libre (reglas, sin costo) ───
+const OC_UNI = {un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,'dieciséis':16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,veintiuno:21,veintiun:21,'veintiún':21,veintidos:22,'veintidós':22,veintitres:23,'veintitrés':23,veinticuatro:24,veinticinco:25,veintiseis:26,'veintiséis':26,veintisiete:27,veintiocho:28,veintinueve:29,treinta:30,cuarenta:40,cincuenta:50,sesenta:60,setenta:70,ochenta:80,noventa:90,cien:100,ciento:100,doscientos:200,doscientas:200,trescientos:300,trescientas:300,cuatrocientos:400,cuatrocientas:400,quinientos:500,quinientas:500,seiscientos:600,seiscientas:600,setecientos:700,setecientas:700,ochocientos:800,ochocientas:800,novecientos:900,novecientas:900,medio:0.5,media:0.5};
+// Límite de palabra que sí entiende tildes (\b de JS no reconoce "é", "í"...).
+// Captura el carácter previo en $1 para poder reemplazar sin lookbehind.
+function ocW(alt){ return new RegExp('(^|[^\\p{L}\\p{N}])(?:' + alt + ')(?=$|[^\\p{L}\\p{N}])', 'giu'); }
+function ocNum(tok){
+  // "25.000" "25,000" "1.500.000" → miles; "1,5" "2.5" → decimal
+  if(/^\d{1,3}([.,]\d{3})+$/.test(tok)) return parseInt(tok.replace(/[.,]/g,''));
+  if(/^\d+([.,]\d+)?$/.test(tok)) return parseFloat(tok.replace(',','.'));
+  return null;
+}
+function ocParse(txt){
+  const raw = String(txt||'');
+  const lower = raw.toLowerCase();
+  const tags = ocTagsDe(raw);
+  // Tokens con su posición, para luego quitar los que forman el monto
+  // Trozos separados por espacios; "D1" o "3B" son palabras, no montos
+  const toks = [];
+  const re = /[^\s]+/gu; let m;
+  while((m = re.exec(lower))){
+    let t = m[0], s = m.index;
+    const lead = t.match(/^[("'¿¡]+/); if(lead){ t = t.slice(lead[0].length); s += lead[0].length; }
+    t = t.replace(/[)"'?!:;]+$/,'').replace(/[.,]+$/,'');
+    if(!t) continue;
+    toks.push({ t, s, e: s + t.length });
+  }
+  toks.forEach(k=>{ if(!/^\$?\d[\d.,]*[km]?$/.test(k.t) && /\d/.test(k.t)) k.t = '§' + k.t; });
+  const cands = []; let cur = null;
+  const cierra = ()=>{ if(cur){ cur.v = cur.total + cur.part; if(cur.v>0) cands.push(cur); cur = null; } };
+  for(let i=0;i<toks.length;i++){
+    let t = toks[i].t.replace(/^\$/,'');
+    let suf = null;
+    const mk = t.match(/^(\d[\d.,]*)([km])$/); if(mk){ t = mk[1]; suf = mk[2]; }
+    const n = ocNum(t);
+    const w = OC_UNI[t];
+    if(n !== null || w !== undefined){
+      if(!cur) cur = { total:0, part:0, s: toks[i].s, e: toks[i].e };
+      const v = n !== null ? n : w;
+      if(v === 0.5){ cur.part += 0.5; } else cur.part += v;
+      cur.e = toks[i].e;
+      if(suf==='k'){ cur.total += (cur.part||1)*1000; cur.part = 0; }
+      if(suf==='m'){ cur.total += (cur.part||1)*1e6; cur.part = 0; }
+      continue;
+    }
+    if(cur && (t==='mil' || t==='lucas' || t==='luca' || t==='k')){ cur.total += (cur.part||1)*1000; cur.part=0; cur.e = toks[i].e; continue; }
+    if(cur && /^(millón|millon|millones|palo|palos|m)$/.test(t)){ cur.total = (cur.total + (cur.part||1))*1e6; cur.part=0; cur.e = toks[i].e; continue; }
+    if(cur && t==='y' && toks[i+1] && (OC_UNI[toks[i+1].t]!==undefined || ocNum(toks[i+1].t)!==null)){ continue; }
+    if(!cur && (t==='mil') ){ cur = { total:1000, part:0, s: toks[i].s, e: toks[i].e }; continue; }
+    cierra();
+  }
+  cierra();
+  let best = null; cands.forEach(c=>{ if(!best || c.v > best.v) best = c; });
+  let monto = best ? Math.round(best.v) : 0;
+  // Moneda extranjera
+  let moneda = null;
+  if(ocW('usd|us\\$|u\\$s|d[oó]lares?|dolar').test(lower)) moneda = 'USD';
+  else if(ocW('eur|euros?').test(lower) || lower.includes('€')) moneda = 'EUR';
+  let original = null;
+  if(moneda && best){
+    original = best.v;
+    if(ocAutoConv && ocFx && ocFx[moneda]) monto = Math.round(best.v * ocFx[moneda]);
+  }
+  // Tipo
+  const tipo = ocW('recib[ií]|recibimos|me pagaron|me consignaron|me depositaron|me abonaron|ingreso|n[oó]mina|salario|sueldo|me transfirieron|cobr[eé]').test(lower) ? 'ingreso' : 'gasto';
+  // Fecha
+  let fechaRel = null;
+  if(ocW('anteayer|antier').test(lower)) fechaRel = 'anteayer'; else if(ocW('ayer').test(lower)) fechaRel = 'ayer';
+  // Medio
+  let banco = '';
+  const bancoMap = [['bancolombia','Bancolombia'],['nequi','Nequi'],['davivienda','Davivienda'],['nubank','Nubank'],['nu ','Nubank'],['daviplata','Daviplata'],['bbva','BBVA'],['efectivo','Efectivo'],['apple pay','Apple Pay'],['tarjeta','Tarjeta'],['débito','Débito'],['debito','Débito'],['crédito','Crédito'],['credito','Crédito']];
+  for(const [kw,name] of bancoMap){ if(lower.includes(kw)){ banco = name; break; } }
+  // Descripción: texto sin monto, etiquetas, verbos ni rellenos
+  let desc = raw;
+  if(best) desc = desc.slice(0, best.s) + ' ' + desc.slice(best.e);
+  desc = desc.replace(OC_TAG_RE,' ')
+    .replace(ocW('con (?:la |el |mi )?(?:tarjeta(?: de (?:d[eé]bito|cr[eé]dito))?|nequi|daviplata|bancolombia|davivienda|efectivo|apple pay|nubank|bbva|d[eé]bito|cr[eé]dito)|por (?:nequi|daviplata|apple pay)|en efectivo'),'$1 ')
+    .replace(ocW('le pagu[eé]|me cobraron|me pagaron|me consignaron|me depositaron|me abonaron|me transfirieron|gast[eé]|pagu[eé]|compr[eé]|pagamos|recib[ií]|recibimos|cobr[eé]'),'$1 ')
+    .replace(ocW('pesos|plata|lucas|luca|cop|usd|u\\$s|us|d[oó]lares?|dolar|eur|euros?|anteayer|antier|ayer|hoy'),'$1 ')
+    .replace(/[€$]/g,' ')
+    .replace(/\s+/g,' ').trim();
+  for(let k=0;k<3;k++){
+    desc = desc.replace(/^(en|de|por|para|un|una|unos|el|la|los|las|y)\s+/i,'').replace(/\s+(en|de|por|para|con|y|el|la)$/i,'').trim();
+  }
+  if(desc) desc = desc.charAt(0).toUpperCase() + desc.slice(1);
+  const cat = parseKeywords(desc || raw, tipo);
+  return { monto, desc, tipo, cat, banco, tags, moneda, original, fechaRel };
+}
+
+// ─── Registro rápido ───
+let ocQ = { tipo:'gasto', tipoManual:false, cat:null, catManual:false, parsed:null };
+function abrirQuick(prefill){
+  ocQ = { tipo:'gasto', tipoManual:false, cat:null, catManual:false, parsed:null };
+  document.getElementById('qText').value = prefill || '';
+  document.getElementById('qFecha').value = 'hoy';
+  document.getElementById('qFechaOtra').style.display = 'none';
+  document.getElementById('qFrec').value = 'una';
+  ocQTipo('gasto', true);
+  ocQRender();
+  show('drawerQuick');
+  setTimeout(()=>{ const el = document.getElementById('qText'); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }, 250);
+}
+function ocQTipo(t, auto){
+  ocQ.tipo = t; if(!auto) ocQ.tipoManual = true;
+  document.getElementById('qTipoG').classList.toggle('on', t==='gasto');
+  document.getElementById('qTipoI').classList.toggle('on', t==='ingreso');
+  if(!auto) ocQRender();
+}
+function ocQFecha(){
+  const v = document.getElementById('qFecha').value;
+  const o = document.getElementById('qFechaOtra');
+  o.style.display = v==='otra' ? 'inline-block' : 'none';
+  if(v==='otra' && !o.value) o.value = hoyStr();
+  ocQRender();
+}
+function ocQFechaISO(p){
+  const sel = document.getElementById('qFecha').value;
+  let rel = sel; if(sel==='hoy' && p && p.fechaRel) rel = p.fechaRel;
+  if(rel==='ayer') return new Date(Date.now() - 86400000).toISOString();
+  if(rel==='anteayer') return new Date(Date.now() - 2*86400000).toISOString();
+  if(rel==='otra'){ const d = document.getElementById('qFechaOtra').value; if(d) return d===hoyStr() ? new Date().toISOString() : new Date(d+'T12:00:00-05:00').toISOString(); }
+  return new Date().toISOString();
+}
+function ocQRender(){
+  const txt = document.getElementById('qText').value;
+  const p = ocParse(txt); ocQ.parsed = p;
+  if(!ocQ.tipoManual && txt.trim()) ocQTipo(p.tipo, true);
+  if(!ocQ.catManual) ocQ.cat = txt.trim() ? p.cat : null;
+  const cat = ocQ.cat || (ocQ.tipo==='ingreso' ? 'ingresos' : 'otros');
+  const rows = [];
+  rows.push(['Descripción', p.desc ? S(p.desc) : '<span style="color:var(--text-3)">—</span>']);
+  let mStr = p.monto ? fmt(p.monto) : '<span style="color:var(--text-3)">—</span>';
+  if(p.moneda && p.original){ mStr = (ocAutoConv && ocFx && ocFx[p.moneda]) ? `${p.moneda} ${p.original} → ${fmt(p.monto)}` : `${p.moneda} ${p.original} (sin convertir)`; }
+  rows.push(['Monto', mStr]);
+  rows.push(['Categoría', S(CAT_LABELS[cat]||cat)]);
+  if(p.tags.length) rows.push(['Etiquetas', p.tags.map(t=>'<span class="oc-tag">#'+S(t)+'</span>').join(' ')]);
+  if(p.banco) rows.push(['Medio', S(p.banco)]);
+  const fsel = document.getElementById('qFecha').value;
+  if(fsel==='hoy' && p.fechaRel) rows.push(['Fecha', p.fechaRel==='ayer' ? 'Ayer' : 'Anteayer']);
+  const frec = document.getElementById('qFrec').value;
+  if(frec!=='una') rows.push(['Repetir', FREC_LABELS[frec] + ' · se agrega a Programados']);
+  let warn = '';
+  if(txt.trim() && !p.monto) warn = '<div class="warn">No encontré el monto. Escríbelo con números, por ejemplo 25000 o 25 mil.</div>';
+  if(p.moneda && !(ocAutoConv && ocFx && ocFx[p.moneda])) warn += '<div class="warn">Activa la conversión automática en Config para pasarlo a COP.</div>';
+  document.getElementById('qPrev').innerHTML = `<div class="ph">${ic('spark')} Así lo entendí</div>` + rows.map(([k,v])=>`<div class="pr"><span>${k}</span><span>${v}</span></div>`).join('') + warn;
+  // Categorías
+  const cats = catList.filter(c=> ocQ.tipo==='ingreso' ? ['ingresos','ahorro','otros'].includes(c.id) || c.id===cat : !['ingresos'].includes(c.id));
+  cats.sort((a,b)=> (a.id===cat?-1:0) - (b.id===cat?-1:0));
+  document.getElementById('qCats').innerHTML = cats.map(c=>`<button class="oc-chip oc-catchip ${c.id===cat?'on':''}" onclick="ocQCat('${S(c.id)}')" aria-pressed="${c.id===cat}"><span class="cd">${catIcon(c.icon)}</span>${S(c.label)}</button>`).join('');
+  // Etiquetas
+  const activas = new Set(p.tags);
+  const extra = p.tags.filter(t=>!ocTagsFav.includes(t));
+  document.getElementById('qTags').innerHTML = ocTagsFav.concat(extra).map(t=>`<button class="oc-chip tag ${activas.has(t)?'on':''}" onclick="ocQTag('${S(t)}')" aria-pressed="${activas.has(t)}">#${S(t)}</button>`).join('') + `<button class="oc-chip" onclick="cerrarDrawer('drawerQuick');ocAbrirTags();">${ic('plus')} Nueva</button>`;
+  document.getElementById('qGuardarBtn').disabled = !p.monto;
+}
+function ocQCat(id){ ocQ.cat = id; ocQ.catManual = true; ocQRender(); }
+function ocQTag(t){
+  const el = document.getElementById('qText'); let v = el.value;
+  const re = new RegExp('\\s*#' + t.replace(/[-\/\\^$*+?.()|[\]{}]/g,'\\$&') + '(?![\\p{L}\\p{N}_-])', 'giu');
+  if(re.test(v)) v = v.replace(re,'').trim(); else v = (v.trim() + ' #' + t).trim();
+  el.value = v; ocQRender();
+}
+// Subcategoría: la que aparezca en el texto; si no, la primera de la categoría
+function ocSubcat(cat, txt){
+  const subs = getSubcats(cat); const t = ocNorm(txt);
+  const hit = subs.find(sc=>ocNorm(sc).split('/').some(w=>w.trim().length>2 && t.includes(w.trim())));
+  return hit || subs[0];
+}
+async function ocGuardarParse(p, opts){
+  const tipo = opts.tipo || p.tipo;
+  const cat = opts.cat || p.cat || (tipo==='ingreso'?'ingresos':'otros');
+  const base = p.desc || (tipo==='ingreso' ? 'Ingreso' : 'Gasto');
+  const extra = p.moneda && p.original ? ` (${p.moneda} ${p.original})` : '';
+  const descripcion = (base + extra + (p.tags.length ? ' ' + p.tags.map(t=>'#'+t).join(' ') : '')).trim();
+  const obj = { monto:p.monto, descripcion, tipo, categoria:cat, subcategoria:ocSubcat(cat, base), banco:p.banco || opts.banco || 'Manual', origen:'manual', fecha: opts.fecha || new Date().toISOString() };
+  await insertarRec(obj);
+  if(opts.frec && opts.frec!=='una'){
+    const dia = String(new Date(new Date(obj.fecha).getTime()-5*3600000).getUTCDate());
+    programados.push({ id:'p'+Date.now(), nombre:base, monto:p.monto, tipo, cat, subcat:obj.subcategoria, frec:opts.frec, dia, pagadoEste:true });
+    guardarProgramadosStorage();
+  }
+}
+async function ocQGuardar(){
+  const p = ocQ.parsed || ocParse(document.getElementById('qText').value);
+  if(!p.monto){ toast('Falta el monto'); return; }
+  if(!SUPABASE_URL || !SUPABASE_KEY){ toast('Conecta Supabase en Config para guardar'); return; }
+  const btn = document.getElementById('qGuardarBtn'); btn.disabled = true;
+  try{
+    await ocGuardarParse(p, { tipo:ocQ.tipo, cat:ocQ.cat, fecha:ocQFechaISO(p), frec:document.getElementById('qFrec').value });
+    hide('drawerQuick'); irA('home');
+  }catch(e){ toast('Error al guardar: ' + e.message); }
+  btn.disabled = false;
+}
+
+// ─── Voz a pantalla completa ───
+let ocVR = null, ocVOn = false, ocVParsed = null, ocVFinal = '';
+(function(){ const w = document.getElementById('ocWave'); if(w){ const hs=[10,18,30,22,40,56,34,62,48,70,44,58,36,66,50,30,46,24,38,20,28,14,20,10]; w.innerHTML = hs.map((h,i)=>`<i style="--h:${h}px;animation-delay:${(i%6)*0.09}s"></i>`).join(''); } })();
+function abrirVozFull(conGesto){
+  ocVParsed = null; ocVFinal = '';
+  document.getElementById('ocVTxt').textContent = '';
+  document.getElementById('ocVChips').innerHTML = '';
+  document.getElementById('ocVEdit').style.display = 'none';
+  document.getElementById('ocVOk').disabled = true;
+  document.getElementById('ocVLang').value = ocVozLangV;
+  document.getElementById('ocVStat').textContent = 'Toca el micrófono para hablar';
+  document.getElementById('ocVoz').classList.add('open');
+  if(conGesto !== false) ocVozStart();
+}
+function cerrarVozFull(){ ocVozStop(); document.getElementById('ocVoz').classList.remove('open'); }
+function ocVozLang(v){ ocVozLangV = v; ocSave('oc_voz_lang', v); const a=document.getElementById('ocVLang'), b=document.getElementById('cfgVozLang'); if(a) a.value=v; if(b) b.value=v; }
+function ocVozToggle(){ ocVOn ? ocVozStop() : ocVozStart(); }
+function ocVozStop(){ try{ ocVR && ocVR.stop(); }catch(e){} }
+function ocVozStart(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){ document.getElementById('ocVStat').textContent = 'La voz no está disponible en este navegador'; return; }
+  try{ ocVR && ocVR.abort(); }catch(e){}
+  ocVR = new SR(); ocVR.lang = ocVozLangV; ocVR.interimResults = true; ocVR.continuous = false; ocVR.maxAlternatives = 1;
+  ocVR.onstart = ()=>{ ocVOn = true; document.getElementById('ocVoz').classList.add('listening'); document.getElementById('ocVStat').textContent = 'Escuchando'; };
+  ocVR.onresult = (e)=>{
+    let fin = '', inter = '';
+    for(let i=0;i<e.results.length;i++){ const r = e.results[i]; if(r.isFinal) fin += r[0].transcript; else inter += r[0].transcript; }
+    if(fin) ocVFinal = fin;
+    const txt = (fin || inter).trim();
+    document.getElementById('ocVTxt').textContent = txt ? '“' + txt + '”' : '';
+    if(txt) ocVozMostrar(txt);
+  };
+  ocVR.onerror = (ev)=>{ document.getElementById('ocVStat').textContent = ev.error==='not-allowed' ? 'Permite el micrófono para usar la voz' : 'No te escuché bien, intenta de nuevo'; };
+  ocVR.onend = ()=>{ ocVOn = false; document.getElementById('ocVoz').classList.remove('listening'); if(ocVParsed && ocVParsed.monto) document.getElementById('ocVStat').textContent = '¿Está bien? Confirma para guardar'; else if(document.getElementById('ocVStat').textContent==='Escuchando') document.getElementById('ocVStat').textContent = 'Toca el micrófono para hablar'; };
+  try{ ocVR.start(); }catch(e){ document.getElementById('ocVStat').textContent = 'Toca el micrófono para hablar'; }
+}
+function ocVozMostrar(txt){
+  const p = ocParse(txt); ocVParsed = p; ocVParsed._txt = txt;
+  const chips = [];
+  if(p.monto) chips.push(ic('wallet') + ' ' + fmt(p.monto));
+  chips.push((CAT_ICONS[p.cat]||ic('tag')) + ' ' + S(CAT_LABELS[p.cat]||p.cat));
+  chips.push((p.tipo==='ingreso'?ic('arrowin'):ic('arrowout')) + ' ' + (p.tipo==='ingreso'?'Ingreso':'Gasto'));
+  if(p.banco) chips.push(ic('card') + ' ' + S(p.banco));
+  chips.push(ic('calendar') + ' ' + (p.fechaRel==='ayer'?'Ayer':p.fechaRel==='anteayer'?'Anteayer':'Hoy'));
+  p.tags.forEach(t=>chips.push(ic('hash') + ' ' + S(t)));
+  document.getElementById('ocVChips').innerHTML = chips.map(c=>`<span>${c}</span>`).join('');
+  document.getElementById('ocVOk').disabled = !p.monto;
+  document.getElementById('ocVEdit').style.display = 'inline-block';
+}
+function ocVozEditar(){ const t = ocVParsed ? ocVParsed._txt : ''; cerrarVozFull(); abrirQuick(t); }
+async function ocVozGuardar(){
+  if(!ocVParsed || !ocVParsed.monto){ toast('No detecté el monto'); return; }
+  if(!SUPABASE_URL || !SUPABASE_KEY){ toast('Conecta Supabase en Config para guardar'); return; }
+  const p = ocVParsed; document.getElementById('ocVOk').disabled = true;
+  let fecha = new Date().toISOString();
+  if(p.fechaRel==='ayer') fecha = new Date(Date.now()-86400000).toISOString();
+  if(p.fechaRel==='anteayer') fecha = new Date(Date.now()-2*86400000).toISOString();
+  try{ await ocGuardarParse(p, { fecha, banco:'Voz' }); cerrarVozFull(); irA('home'); }
+  catch(e){ toast('Error al guardar: ' + e.message); document.getElementById('ocVOk').disabled = false; }
+}
+
+// ─── Búsqueda global ───
+let ocRango_ = 'todo', ocBT = null, ocBSeq = 0;
+const OC_RANGOS = [['todo','Todo'],['ciclo','Este ciclo'],['3m','3 meses'],['anio','Este año'],['rango','Rango']];
+function ocRenderRangos(){
+  const box = document.getElementById('ocRangos'); if(!box) return;
+  box.innerHTML = OC_RANGOS.map(([k,l])=>`<button class="oc-chip ${ocRango_===k?'on':''}" onclick="ocSetRango('${k}')" aria-pressed="${ocRango_===k}">${k==='rango'?ic('calendar'):''}${l}</button>`).join('');
+  document.getElementById('ocRangoBox').style.display = ocRango_==='rango' ? 'flex' : 'none';
+}
+function ocSetRango(k){
+  ocRango_ = k;
+  if(k==='rango'){ const d=document.getElementById('ocDesde'), h=document.getElementById('ocHasta'); if(!h.value) h.value = hoyStr(); if(!d.value) d.value = new Date(Date.now()-90*86400000).toISOString().slice(0,10); }
+  ocRenderRangos(); ocBuscar();
+}
+function ocLimites(){
+  const hoy = hoyStr();
+  if(ocRango_==='ciclo'){ const rg = ocRango(0); return [rg.ini, rg.fin]; }
+  if(ocRango_==='3m') return [new Date(Date.now()-92*86400000).toISOString().slice(0,10), hoy];
+  if(ocRango_==='anio') return [hoy.slice(0,4)+'-01-01', hoy];
+  if(ocRango_==='rango'){ const d=document.getElementById('ocDesde').value, h=document.getElementById('ocHasta').value; return [d||null, h||null]; }
+  return [null, null];
+}
+function ocBuscarDebounce(){ clearTimeout(ocBT); ocBT = setTimeout(ocBuscar, 320); }
+function ocLimpiarBusqueda(){ document.getElementById('ocQ').value=''; ocBuscar(); document.getElementById('ocQ').focus(); }
+function ocCoincide(r, q, tag){
+  if(tag) return ocTagsDe(r.descripcion).includes(tag);
+  const t = (String(r.descripcion||'') + ' ' + String(r.banco||'') + ' ' + String(CAT_LABELS[r.categoria]||r.categoria||'') + ' ' + String(r.subcategoria||'')).toLowerCase();
+  return t.includes(q);
+}
+async function ocBuscar(){
+  const qRaw = document.getElementById('ocQ').value.trim();
+  const q = qRaw.toLowerCase();
+  const tag = q.startsWith('#') ? q.slice(1) : null;
+  const [ini, fin] = ocLimites();
+  const res = document.getElementById('ocResultados'), sum = document.getElementById('ocSum');
+  if(!q && ocRango_==='todo'){ sum.innerHTML=''; res.innerHTML = '<div class="empty-state"><div class="icon">'+ic('search')+'</div><h3>Busca en todo tu historial</h3><p>Escribe una descripción, una categoría, un medio de pago o una #etiqueta.</p></div>'; return; }
+  const seq = ++ocBSeq;
+  sum.innerHTML = '<span>Buscando…</span><span></span>';
+  let data = [];
+  let remoto = false;
+  if(SUPABASE_URL && SUPABASE_KEY){
+    try{
+      const safe = (tag ? '#'+tag : q).replace(/[,()*%\\]/g,' ').trim();
+      let path = 'gastos?select=*&order=fecha.desc&limit=500';
+      if(safe){
+        const cats = Object.keys(CAT_LABELS).filter(id=>String(CAT_LABELS[id]).toLowerCase().includes(q));
+        const ors = [`descripcion.ilike.*${safe}*`];
+        if(!tag){ ors.push(`banco.ilike.*${safe}*`, `subcategoria.ilike.*${safe}*`); if(cats.length) ors.push(`categoria.in.(${cats.join(',')})`); }
+        path += '&or=' + encodeURIComponent('(' + ors.join(',') + ')');
+      }
+      if(ini) path += '&fecha=gte.' + encodeURIComponent(new Date(ini+'T00:00:00-05:00').toISOString());
+      if(fin) path += '&fecha=lt.' + encodeURIComponent(new Date(new Date(fin+'T00:00:00-05:00').getTime()+86400000).toISOString());
+      data = await sbFetch('GET', path) || [];
+      remoto = true;
+    }catch(e){ console.error('buscar', e); }
+  }
+  if(!remoto){
+    data = registros.filter(r=>{ const k = fechaDiaCol(r.fecha); return (!q || ocCoincide(r, q, tag)) && (!ini || k>=ini) && (!fin || k<=fin); });
+  } else if(tag){
+    data = data.filter(r=>ocTagsDe(r.descripcion).includes(tag));
+  }
+  if(seq !== ocBSeq) return;
+  ocUltimos = data;
+  const t = ocTot(data); const net = t.i - t.g;
+  sum.innerHTML = `<span>${data.length} ${data.length===1?'resultado':'resultados'}${remoto?'':' · sin conexión, últimos 90 días'}</span><span>${data.length ? ((net>=0?'+':'−') + fmt(Math.abs(net))) : ''}</span>`;
+  if(!data.length){ res.innerHTML = '<div class="empty-state"><div class="icon">'+ic('inbox')+'</div><h3>Sin resultados</h3><p>Prueba otra palabra o amplía el rango de fechas.</p></div>'; return; }
+  const grupos = {}, orden = [];
+  data.forEach(r=>{ const k = fechaDiaCol(r.fecha).slice(0,7); if(!grupos[k]){ grupos[k]=[]; orden.push(k); } grupos[k].push(r); });
+  res.innerHTML = orden.map(k=>{
+    const [y, m] = k.split('-'); const items = grupos[k]; const tt = ocTot(items); const n = tt.i - tt.g;
+    return `<div class="day-group"><div class="day-hdr"><span class="d-lbl">${OC_MESES_L[parseInt(m)-1]} ${y}</span><span class="d-tot ${n>=0?'pos':'neg'}">${(n>=0?'+':'-')+fmt(Math.abs(n))}</span></div>${items.map(r=>renderTxRow(r).replace(`abrirEdit("${r.id}")`, `ocAbrirDesdeBusqueda("${r.id}")`)).join('')}</div>`;
+  }).join('');
+}
+let ocUltimos = [];
+function ocAbrirDesdeBusqueda(id){
+  if(!registros.find(x=>String(x.id)===String(id))){ const r = ocUltimos.find(x=>String(x.id)===String(id)); if(r) registros.push(r); }
+  abrirEdit(id);
+}
+
+// ─── Importar CSV ───
+let ocImpRows = [];
+function ocAbrirImport(){ document.getElementById('impFile').value=''; document.getElementById('impPrev').innerHTML=''; document.getElementById('impBtn').disabled=true; ocImpRows=[]; show('drawerImport'); }
+function ocCSV(text){
+  const sep = (text.split('\n')[0].match(/;/g)||[]).length > (text.split('\n')[0].match(/,/g)||[]).length ? ';' : ',';
+  const rows = []; let row = [], cell = '', q = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; } else cell+=c; }
+    else if(c==='"') q=true;
+    else if(c===sep){ row.push(cell); cell=''; }
+    else if(c==='\n' || c==='\r'){ if(c==='\r' && text[i+1]==='\n') i++; row.push(cell); cell=''; if(row.some(x=>x.trim()!=='')) rows.push(row); row=[]; }
+    else cell+=c;
+  }
+  row.push(cell); if(row.some(x=>x.trim()!=='')) rows.push(row);
+  return rows;
+}
+function ocNorm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim(); }
+function ocImpFecha(v){
+  v = String(v||'').trim(); if(!v) return null;
+  let m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[ T](\d{1,2}):(\d{2}))?/);
+  if(m){ const y = m[3].length===2 ? '20'+m[3] : m[3]; const d = `${y}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}T${(m[4]||'12').padStart(2,'0')}:${m[5]||'00'}:00-05:00`; const dt = new Date(d); return isNaN(dt) ? null : dt.toISOString(); }
+  m = v.match(/^\d{4}-\d{2}-\d{2}$/); if(m){ const dt = new Date(v+'T12:00:00-05:00'); return isNaN(dt)?null:dt.toISOString(); }
+  const dt = new Date(v); return isNaN(dt) ? null : dt.toISOString();
+}
+function ocImpMonto(v){
+  let s = String(v||'').replace(/[^\d,.\-]/g,'');
+  if(!s) return 0;
+  if(/^-?\d{1,3}([.,]\d{3})+$/.test(s)) s = s.replace(/[.,]/g,'');
+  else if(/,\d{1,2}$/.test(s)) s = s.replace(/\./g,'').replace(',','.');
+  else s = s.replace(/,/g,'');
+  return parseFloat(s)||0;
+}
+function ocImpLeer(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    const rows = ocCSV(String(rd.result||'').replace(/^﻿/,''));
+    const prev = document.getElementById('impPrev');
+    if(rows.length < 2){ prev.innerHTML = '<p style="color:#FFD60A;font-size:13px;">El archivo no tiene filas de datos.</p>'; return; }
+    const h = rows[0].map(ocNorm);
+    const idx = (...names)=>h.findIndex(x=>names.some(n=>x===n || x.includes(n)));
+    const iF = idx('fecha','date'), iD = idx('descripcion','description','concepto','detalle'), iM = idx('monto','amount','valor','importe'), iT = idx('tipo','type'), iC = idx('categoria','category'), iB = idx('banco','medio','cuenta','bank');
+    if(iM < 0 || iD < 0){ prev.innerHTML = '<p style="color:#FFD60A;font-size:13px;">No encontré las columnas de descripción y monto.</p>'; return; }
+    const existentes = new Set(registros.map(r=>fechaDiaCol(r.fecha)+'|'+Math.round(r.monto)+'|'+ocNorm(r.descripcion)));
+    const porLabel = {}; catList.forEach(c=>{ porLabel[ocNorm(c.label)] = c.id; porLabel[ocNorm(c.id)] = c.id; });
+    let dup = 0, malas = 0; ocImpRows = [];
+    rows.slice(1).forEach(r=>{
+      const desc = String(r[iD]||'').trim(); let monto = ocImpMonto(r[iM]);
+      const fecha = iF>=0 ? ocImpFecha(r[iF]) : new Date().toISOString();
+      if(!desc || !monto || !fecha){ malas++; return; }
+      let tipo = iT>=0 ? ocNorm(r[iT]) : '';
+      tipo = /ingreso|income|credit|abono/.test(tipo) ? 'ingreso' : /gasto|expense|debit|cargo/.test(tipo) ? 'gasto' : (monto>0 && iT<0 ? 'gasto' : (monto<0?'gasto':'gasto'));
+      if(iT<0 && monto>0 && /recib|nomina|salario|abono/.test(ocNorm(desc))) tipo = 'ingreso';
+      monto = Math.round(Math.abs(monto));
+      let cat = iC>=0 ? porLabel[ocNorm(r[iC])] : null;
+      if(!cat) cat = parseKeywords(desc, tipo);
+      const key = fechaDiaCol(fecha)+'|'+monto+'|'+ocNorm(desc);
+      if(existentes.has(key)){ dup++; return; }
+      existentes.add(key);
+      ocImpRows.push({ fecha, descripcion:desc, monto, tipo, categoria:cat, subcategoria:ocSubcat(cat, desc), banco:(iB>=0 && String(r[iB]||'').trim()) || 'Importado', origen:'import' });
+    });
+    const t = ocTot(ocImpRows);
+    prev.innerHTML = `<div class="oc-prev" style="margin-bottom:8px;"><div class="pr"><span>Filas listas</span><span>${ocImpRows.length}</span></div><div class="pr"><span>Duplicadas (se omiten)</span><span>${dup}</span></div><div class="pr"><span>Incompletas (se omiten)</span><span>${malas}</span></div><div class="pr"><span>Gastos</span><span>${fmt(t.g)}</span></div><div class="pr"><span>Ingresos</span><span>${fmt(t.i)}</span></div></div>`;
+    document.getElementById('impBtn').disabled = !ocImpRows.length;
+  };
+  rd.readAsText(f, 'utf-8');
+}
+async function ocImpConfirmar(){
+  if(!ocImpRows.length) return;
+  if(!SUPABASE_URL || !SUPABASE_KEY){ toast('Conecta Supabase en Config para importar'); return; }
+  const btn = document.getElementById('impBtn'); btn.disabled = true; btn.textContent = 'Importando…';
+  let ok = 0;
+  try{
+    for(let i=0;i<ocImpRows.length;i+=100){
+      const lote = ocImpRows.slice(i,i+100).map(o=>sanitizePayload(o, COLS_GASTOS));
+      const r = await sbFetch('POST','gastos', lote); ok += (r||[]).length || lote.length;
+    }
+    toast(`${ok} movimientos importados`);
+    hide('drawerImport'); cargarDatos(); if(ocAcum) ocCargarAcumulado();
+  }catch(e){ console.error('import', e); toast(`Error tras ${ok} filas: ` + e.message); }
+  btn.textContent = 'Importar'; btn.disabled = false;
+}
+
+// ─── Navegación ───
+const _ocIrA = irA;
+irA = function(screen){
+  _ocIrA(screen);
+  if(screen==='buscar'){ ocRenderRangos(); ocBuscar(); setTimeout(()=>document.getElementById('ocQ')?.focus(), 200); }
+  if(screen==='config'){ ocRenderTags(); ocPintarFx(); }
+};
+
+// ─── Inicio del módulo ───
+document.addEventListener('DOMContentLoaded', ()=>{
+  const sel = document.getElementById('cfgCiclo');
+  if(sel){ sel.innerHTML = Array.from({length:28},(_,i)=>i+1).map(d=>`<option value="${d}">${d===1?'Mes calendario (del 1 al último día)':`Ciclo del ${d} al ${d-1} de cada mes`}</option>`).join(''); sel.value = String(ocCicloDia); }
+  document.getElementById('cfgShowIn')?.classList.toggle('on', ocShowIn);
+  document.getElementById('cfgAcum')?.classList.toggle('on', ocAcum);
+  document.getElementById('cfgAutoConv')?.classList.toggle('on', ocAutoConv);
+  const vl = document.getElementById('cfgVozLang'); if(vl) vl.value = ocVozLangV;
+  document.body.classList.toggle('oc-hide-in', !ocShowIn);
+  document.querySelectorAll('.toggle-switch[role="switch"]').forEach(el=>{
+    el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+    const sync = ()=>el.setAttribute('aria-checked', el.classList.contains('on') ? 'true' : 'false');
+    sync(); new MutationObserver(sync).observe(el, { attributes:true, attributeFilter:['class'] });
+  });
+  ocRenderTags(); ocPintarFx();
+  updateStats(); renderHome();
+  if(ocAcum) ocCargarAcumulado();
+  ocCargarFx(false);
 });
 </script>
 </body>
