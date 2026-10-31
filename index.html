@@ -2221,7 +2221,8 @@ function renderBreakdown(){
     ${subcatHtml?`<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin-bottom:10px;">SUBCATEGORÍAS</div>${subcatHtml}`:''}
     <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:14px 0 10px;">TRANSACCIONES</div>
     ${txsCat.slice(0,20).map(r=>`
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bg);">
+      <div class="sw-wrap bd-wrap" data-id="${r.id}"><div class="sw-bg sw-cls">${ic('tag')}<span>Reclasificar</span></div><div class="sw-bg sw-del"><span>Eliminar</span>${ic('trash')}</div>
+      <div class="sw-item" onclick='if(!swBloqClick)abrirEdit("${r.id}")' style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;">
         <div style="flex:1;min-width:0;">
           <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${S(r.descripcion)}</div>
           <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:3px;align-items:center;">
@@ -2231,7 +2232,7 @@ function renderBreakdown(){
           </div>
         </div>
         <div style="font-size:14px;font-weight:900;color:var(--danger);flex-shrink:0;">-${fmt(r.monto)}</div>
-      </div>`).join('')}
+      </div></div>`).join('')}
     ${txsCat.length>20?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:10px;">+${txsCat.length-20} más</div>`:''}
   `;
   bdAcc.classList.add('open');
@@ -4252,8 +4253,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 /* ── Swipe tipo Gmail: izquierda = eliminar, derecha = clasificar ── */
 .sw-wrap{position:relative;overflow:hidden;}
 .sw-wrap + .sw-wrap{border-top:1px solid var(--surface-2);}
-.sw-wrap .tx-row{touch-action:pan-y;will-change:transform;}
-.sw-wrap .tx-row.sw-anim{transition:transform .22s ease;}
+.sw-wrap .tx-row,.sw-wrap .sw-item{touch-action:pan-y;will-change:transform;}
+.sw-wrap .tx-row.sw-anim,.sw-wrap .sw-item.sw-anim{transition:transform .22s ease;}
+.bd-wrap{border-bottom:1px solid var(--bg);}
+.bd-wrap + .bd-wrap{border-top:0;}
 .sw-bg{position:absolute;top:0;bottom:0;width:0;display:flex;align-items:center;gap:8px;overflow:hidden;white-space:nowrap;color:#fff;font-size:13px;font-weight:700;pointer-events:none;}
 .sw-bg svg{width:22px;height:22px;flex-shrink:0;}
 .sw-cls{left:0;justify-content:flex-start;padding-left:0;background:linear-gradient(90deg,#5E5CE6,#7D7AFF);}
@@ -4280,12 +4283,12 @@ let swBloqClick = false;
 (function(){
   const UMBRAL = 0.33;           // fracción del ancho para confirmar la acción
   let st = null;                 // estado del gesto actual
-  function fila(e){ const w = e.target.closest && e.target.closest('#homeFeed .sw-wrap'); return w; }
+  function fila(e){ const w = e.target.closest && e.target.closest('.sw-wrap'); return w; }
   function pos(e){ const t = e.touches ? e.touches[0] : e; return {x:t.clientX, y:t.clientY}; }
   function inicio(e){
     const w = fila(e); if(!w) return;
     const p = pos(e);
-    st = { w, row:w.querySelector('.tx-row'), cls:w.querySelector('.sw-cls'), del:w.querySelector('.sw-del'),
+    st = { w, row:w.querySelector('.tx-row,.sw-item'), cls:w.querySelector('.sw-cls'), del:w.querySelector('.sw-del'),
            x0:p.x, y0:p.y, dx:0, modo:null, ancho:w.offsetWidth };
   }
   function mover(e){
@@ -4352,13 +4355,17 @@ function swConfirmar(){
   if(!swPend) return;
   const {id, t} = swPend; swPend = null; clearTimeout(t);
   document.getElementById('swSnack').classList.remove('show');
-  borrarRec(id).catch(()=>renderHome());
+  borrarRec(id).then(swRefrescarAnalisis).catch(()=>{ renderHome(); swRefrescarAnalisis(); });
 }
 function swDeshacer(){
   if(!swPend) return;
   clearTimeout(swPend.t); swPend = null;
   document.getElementById('swSnack').classList.remove('show');
-  renderHome();
+  renderHome(); swRefrescarAnalisis();
+}
+function swRefrescarAnalisis(){
+  const bd = document.getElementById('acc-breakdown');
+  if(bd && bd.style.display !== 'none'){ try{ renderBreakdown(); }catch(e){} }
 }
 window.addEventListener('pagehide', ()=>{ if(swPend) swConfirmar(); });
 
@@ -4421,6 +4428,7 @@ async function swGuardarClasif(sub){
   const r = registros.find(x=>x.id===id);
   try{
     await editarRec(id, { categoria: cat, subcategoria: sub || 'General' });
+    swRefrescarAnalisis();
     // Enseña al lector de Gmail: la próxima compra en este comercio sale ya clasificada
     if(r && r.descripcion) swAprender(r.descripcion, cat);
   }catch(e){}
