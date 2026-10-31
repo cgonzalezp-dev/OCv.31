@@ -2047,7 +2047,7 @@ function renderAnalisis(){
   htmlH+='</table>';
   document.getElementById('horaContent').innerHTML = htmlH;
   let htmlC = '<table class="data-table"><tr><th>Cat</th><th>Monto</th><th>%</th><th>Barra</th></tr>';
-  catEntries.forEach(([k,v])=>{ const pct=Math.round(v/total*100)||0; htmlC+=`<tr><td><strong>${CAT_ICONS[k]||ic('wallet')} ${CAT_LABELS[k]||k}</strong></td><td>${fmt(v)}</td><td><span class="badge" style="background:var(--danger-soft);color:var(--danger);font-size:10px;">${pct}%</span></td><td style="min-width:80px"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></td></tr>`; });
+  catEntries.forEach(([k,v])=>{ const pct=Math.round(v/total*100)||0; htmlC+=`<tr class="cat-tap ${insightsCatActiva===k?'activa':''}" onclick="ocIrBreakdown('${k}')"><td><strong>${CAT_ICONS[k]||ic('wallet')} ${CAT_LABELS[k]||k}</strong></td><td>${fmt(v)}</td><td><span class="badge" style="background:var(--danger-soft);color:var(--danger);font-size:10px;">${pct}%</span></td><td style="min-width:80px"><div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div></td></tr>`; });
   htmlC+='</table>';
   document.getElementById('categoriasContent').innerHTML = htmlC;
   document.getElementById('habitosContent').innerHTML = `
@@ -2171,6 +2171,14 @@ function guardarPresup(){
   toast('✅ Presupuesto actualizado');
 }
 
+// Tocar una fila de la tabla Categorías: abre su Break Down y baja hasta él
+function ocIrBreakdown(cat){
+  insightsCatActiva = cat;
+  renderAnalisis();
+  document.querySelectorAll('.accordion.open').forEach(a=>{ if(a.id!=='acc-breakdown') a.classList.remove('open'); });
+  const bd = document.getElementById('acc-breakdown');
+  if(bd){ bd.classList.add('open'); setTimeout(()=>bd.scrollIntoView({behavior:'smooth',block:'start'}), 120); }
+}
 function seleccionarCatInsight(cat){
   insightsCatActiva = insightsCatActiva===cat ? null : cat;
   renderAnalisis();
@@ -4320,6 +4328,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 .sw-snack.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
 .sw-snack span{white-space:nowrap;}
 .sw-snack button{background:none;border:0;color:#B3B1FF;font-weight:800;font-size:14px;cursor:pointer;}
+tr.cat-tap{cursor:pointer;transition:background .15s;}
+tr.cat-tap:active td{background:var(--glass2);}
+tr.cat-tap.activa td{background:rgba(94,92,230,.22);}
+tr.cat-tap td:first-child{border-radius:10px 0 0 10px;} tr.cat-tap td:last-child{border-radius:0 10px 10px 0;}
 </style>
 <script>
 // ── Swipe tipo Gmail en el historial ──
