@@ -1413,6 +1413,20 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+<div class="sw-snack" id="swSnack" role="status" aria-live="polite"><span id="swSnackTxt">Eliminado</span><button onclick="swDeshacer()">Deshacer</button></div>
+<!-- Clasificación rápida (swipe a la derecha) -->
+<div class="drawer" id="drawerClasif">
+  <div class="drawer-panel">
+    <div class="drawer-title">Clasificar gasto</div>
+    <p id="clasifPreview" style="color:var(--text-3);font-size:13px;margin:-4px 0 14px;"></p>
+    <div class="sw-chips" id="clasifCats"></div>
+    <div id="clasifSubWrap" style="display:none;margin-top:16px;">
+      <div style="font-size:12px;font-weight:700;color:var(--text-3);margin-bottom:8px;letter-spacing:.4px;">SUBCATEGORÍA</div>
+      <div class="sw-chips" id="clasifSubs"></div>
+    </div>
+    <div class="btn-row" style="margin-top:18px;"><button class="btn btn-secondary" onclick="cerrarDrawer('drawerClasif')">Cancelar</button></div>
+  </div>
+</div>
 
 </div><!-- /app -->
 
@@ -3717,11 +3731,11 @@ renderTxRow = function(r){
   const tags = ocTagsDe(r.descripcion);
   const desc = ocSinTags(r.descripcion) || S(r.descripcion);
   const tagHtml = tags.length ? ' · ' + tags.map(t=>`<span class="oc-tag">#${S(t)}</span>`).join(' ') : '';
-  return `<div class="tx-row ${dubious?'dubious':''}" onclick='abrirEdit("${r.id}")'>
+  return `<div class="sw-wrap" data-id="${r.id}"><div class="sw-bg sw-cls">${ic('tag')}<span>Clasificar</span></div><div class="sw-bg sw-del"><span>Eliminar</span>${ic('trash')}</div><div class="tx-row ${dubious?'dubious':''}" onclick='if(!swBloqClick)abrirEdit("${r.id}")'>
     <div class="r-ico ${isGasto?'gasto':'ingreso'}">${icon}</div>
     <div class="r-info"><div class="r-desc">${S(desc)}</div><div class="r-meta">${catLbl}${sub}${tagHtml}${banco} ${r.origen==='auto'?'· '+ic('bot'):''}</div></div>
     <div class="r-right"><div class="r-monto ${isGasto?'gasto':'ingreso'}">${isGasto?'-':'+'}${fmt(r.monto)}</div><div class="r-hora">${horaCol(r.fecha)}</div></div>
-  </div>`;
+  </div></div>`;
 };
 function ocAbrirTags(){ ocRenderTags(); show('drawerTags'); }
 function ocRenderTags(){
@@ -4213,6 +4227,158 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(ocAcum) ocCargarAcumulado();
   ocCargarFx(false);
 });
+</script>
+<style>
+/* ── Swipe tipo Gmail: izquierda = eliminar, derecha = clasificar ── */
+.sw-wrap{position:relative;overflow:hidden;}
+.sw-wrap + .sw-wrap{border-top:1px solid var(--surface-2);}
+.sw-wrap .tx-row{touch-action:pan-y;will-change:transform;}
+.sw-wrap .tx-row.sw-anim{transition:transform .22s ease;}
+.sw-bg{position:absolute;top:0;bottom:0;width:0;display:flex;align-items:center;gap:8px;overflow:hidden;white-space:nowrap;color:#fff;font-size:13px;font-weight:700;pointer-events:none;}
+.sw-bg svg{width:22px;height:22px;flex-shrink:0;}
+.sw-cls{left:0;justify-content:flex-start;padding-left:0;background:linear-gradient(90deg,#5E5CE6,#7D7AFF);}
+.sw-del{right:0;justify-content:flex-end;padding-right:0;background:linear-gradient(270deg,#FF375F,#FF6961);}
+.sw-bg.on svg{animation:swPop .18s ease;}
+@keyframes swPop{50%{transform:scale(1.25);}}
+.sw-wrap.sw-out{transition:max-height .25s ease .15s,opacity .2s ease;max-height:0!important;opacity:0;}
+.sw-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.sw-chip{display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:var(--glass2);border:.5px solid var(--gline);color:#fff;font:600 13px/1 inherit;cursor:pointer;}
+.sw-chip svg{width:16px;height:16px;}
+.sw-chip.sel{background:#5E5CE6;border-color:transparent;}
+.sw-snack{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:400;display:flex;align-items:center;gap:16px;padding:12px 14px 12px 18px;border-radius:16px;background:var(--sheet);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:.5px solid var(--gline);color:#fff;font-size:14px;transition:.2s ease;max-width:calc(100% - 32px);}
+.sw-snack.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+.sw-snack span{white-space:nowrap;}
+.sw-snack button{background:none;border:0;color:#B3B1FF;font-weight:800;font-size:14px;cursor:pointer;}
+</style>
+<script>
+// ── Swipe tipo Gmail en el historial ──
+let swBloqClick = false;
+(function(){
+  const UMBRAL = 0.33;           // fracción del ancho para confirmar la acción
+  let st = null;                 // estado del gesto actual
+  function fila(e){ const w = e.target.closest && e.target.closest('#homeFeed .sw-wrap'); return w; }
+  function pos(e){ const t = e.touches ? e.touches[0] : e; return {x:t.clientX, y:t.clientY}; }
+  function inicio(e){
+    const w = fila(e); if(!w) return;
+    const p = pos(e);
+    st = { w, row:w.querySelector('.tx-row'), cls:w.querySelector('.sw-cls'), del:w.querySelector('.sw-del'),
+           x0:p.x, y0:p.y, dx:0, modo:null, ancho:w.offsetWidth };
+  }
+  function mover(e){
+    if(!st) return;
+    const p = pos(e), dx = p.x - st.x0, dy = p.y - st.y0;
+    if(!st.modo){
+      if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      st.modo = Math.abs(dx) > Math.abs(dy) * 1.2 ? 'h' : 'v';
+      if(st.modo === 'h') st.row.classList.remove('sw-anim');
+    }
+    if(st.modo !== 'h') return;
+    if(e.cancelable) e.preventDefault();
+    st.dx = dx;
+    st.row.style.transform = `translateX(${dx}px)`;
+    const lleno = Math.abs(dx) >= st.ancho * UMBRAL;
+    st.cls.style.width = dx > 0 ? dx + 'px' : '0';
+    st.del.style.width = dx < 0 ? (-dx) + 'px' : '0';
+    st.cls.style.paddingLeft = dx > 0 ? '18px' : '0';
+    st.del.style.paddingRight = dx < 0 ? '18px' : '0';
+    (dx > 0 ? st.cls : st.del).classList.toggle('on', lleno);
+    (dx > 0 ? st.cls : st.del).style.opacity = lleno ? '1' : '.75';
+  }
+  function fin(){
+    if(!st) return;
+    const s = st; st = null;
+    if(s.modo !== 'h') return;
+    swBloqClick = true; setTimeout(()=>{ swBloqClick = false; }, 350);
+    const id = s.w.dataset.id;
+    const lleno = Math.abs(s.dx) >= s.ancho * UMBRAL;
+    s.row.classList.add('sw-anim');
+    if(lleno && s.dx < 0){
+      s.row.style.transform = `translateX(${-s.ancho}px)`;
+      s.del.style.width = s.ancho + 'px';
+      swEliminar(id, s.w);
+      return;
+    }
+    s.row.style.transform = '';
+    s.cls.style.width = s.del.style.width = '0';
+    s.cls.style.paddingLeft = s.del.style.paddingRight = '0';
+    if(lleno && s.dx > 0) swAbrirClasif(id);
+  }
+  document.addEventListener('touchstart', inicio, {passive:true});
+  document.addEventListener('touchmove', mover, {passive:false});
+  document.addEventListener('touchend', fin);
+  document.addEventListener('touchcancel', fin);
+  // Escritorio: arrastrar con el mouse
+  document.addEventListener('mousedown', e=>{ if(e.button===0) inicio(e); });
+  document.addEventListener('mousemove', e=>{ if(st) mover(e); });
+  document.addEventListener('mouseup', fin);
+})();
+
+// ── Eliminar con "Deshacer" (el DELETE real sale a los 5 s) ──
+let swPend = null;
+function swEliminar(id, wrap){
+  if(swPend) swConfirmar();                       // si había otro pendiente, se ejecuta ya
+  wrap.style.maxHeight = wrap.offsetHeight + 'px';
+  requestAnimationFrame(()=>wrap.classList.add('sw-out'));
+  const r = registros.find(x=>x.id===id);
+  document.getElementById('swSnackTxt').textContent = 'Eliminado' + (r ? ' · ' + fmt(r.monto) : '');
+  document.getElementById('swSnack').classList.add('show');
+  swPend = { id, t: setTimeout(swConfirmar, 5000) };
+}
+function swConfirmar(){
+  if(!swPend) return;
+  const {id, t} = swPend; swPend = null; clearTimeout(t);
+  document.getElementById('swSnack').classList.remove('show');
+  borrarRec(id).catch(()=>renderHome());
+}
+function swDeshacer(){
+  if(!swPend) return;
+  clearTimeout(swPend.t); swPend = null;
+  document.getElementById('swSnack').classList.remove('show');
+  renderHome();
+}
+window.addEventListener('pagehide', ()=>{ if(swPend) swConfirmar(); });
+
+// ── Clasificar (categoría → subcategoría) ──
+let swClsId = null, swClsCat = null;
+function swAbrirClasif(id){
+  const r = registros.find(x=>x.id===id); if(!r) return;
+  swClsId = id; swClsCat = r.categoria || null;
+  document.getElementById('clasifPreview').textContent = S(r.descripcion) + ' · ' + fmt(r.monto);
+  document.getElementById('clasifCats').innerHTML = catList.filter(c=>c.id!=='ingresos' || r.tipo==='ingreso')
+    .map(c=>`<button class="sw-chip ${c.id===r.categoria?'sel':''}" onclick="swElegirCat('${c.id}')">${catIcon(c.icon)}${S(c.label)}</button>`).join('');
+  document.getElementById('clasifSubWrap').style.display = 'none';
+  show('drawerClasif');
+}
+function swElegirCat(cat){
+  swClsCat = cat;
+  document.querySelectorAll('#clasifCats .sw-chip').forEach(b=>b.classList.toggle('sel', b.getAttribute('onclick').includes("'"+cat+"'")));
+  const subs = SUBCATS[cat] || [];
+  if(!subs.length){ swGuardarClasif(''); return; }
+  document.getElementById('clasifSubs').innerHTML = subs.map((s,i)=>`<button class="sw-chip" onclick="swGuardarClasif(SUBCATS['${cat}'][${i}])">${S(s)}</button>`).join('')
+    + `<button class="sw-chip" onclick="swGuardarClasif('')">Sin subcategoría</button>`;
+  document.getElementById('clasifSubWrap').style.display = 'block';
+}
+async function swGuardarClasif(sub){
+  const id = swClsId, cat = swClsCat; if(!id || !cat) return;
+  hide('drawerClasif');
+  const r = registros.find(x=>x.id===id);
+  try{
+    await editarRec(id, { categoria: cat, subcategoria: sub || 'General' });
+    // Enseña al lector de Gmail: la próxima compra en este comercio sale ya clasificada
+    if(r && r.descripcion) swAprender(r.descripcion, cat);
+  }catch(e){}
+}
+function swAprender(desc, cat){
+  const base = String(desc).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim().substring(0,200);
+  if(!base || !SUPABASE_URL) return;
+  fetch(SUPABASE_URL + '/rest/v1/categorias_aprendidas?on_conflict=descripcion_base', {
+    method:'POST',
+    headers:{ apikey:SUPABASE_KEY, Authorization:'Bearer '+SUPABASE_KEY, 'Content-Type':'application/json',
+              Prefer:'resolution=merge-duplicates,return=minimal' },
+    body: JSON.stringify({ descripcion_base: base, categoria: cat })
+  }).catch(()=>{});
+}
 </script>
 </body>
 </html>
