@@ -4012,27 +4012,71 @@ function abrirVozFull(conGesto){
   document.getElementById('ocVoz').classList.add('open');
   if(conGesto !== false) ocVozStart();
 }
-function cerrarVozFull(){ ocVozStop(); document.getElementById('ocVoz').classList.remove('open'); }
+function cerrarVozFull(){ ocVSes++; ocVozSoltar(); document.getElementById('ocVoz').classList.remove('open'); }
 function ocVozLang(v){ ocVozLangV = v; ocSave('oc_voz_lang', v); const a=document.getElementById('ocVLang'), b=document.getElementById('cfgVozLang'); if(a) a.value=v; if(b) b.value=v; }
 function ocVozToggle(){ ocVOn ? ocVozStop() : ocVozStart(); }
 function ocVozStop(){ try{ ocVR && ocVR.stop(); }catch(e){} }
+// En iPhone (Safari / app de inicio) el reconocimiento de voz funciona una vez y luego
+// queda "mudo" si se inicia uno nuevo mientras el anterior no ha soltado el micrófono.
+// Por eso: (1) cada dictado se cierra al recibir el texto final, (2) antes de empezar
+// otro se espera a que el anterior termine de verdad, (3) los eventos de un dictado
+// viejo se ignoran, y (4) si iOS lo cierra al instante sin escuchar, se reintenta una vez.
+let ocVSes = 0;
+function ocVozSoltar(){
+  const r = ocVR; ocVR = null; ocVOn = false;
+  if(!r) return Promise.resolve();
+  return new Promise(res=>{
+    let listo = false; const fin = ()=>{ if(!listo){ listo = true; res(); } };
+    r.onresult = r.onerror = r.onstart = null; r.onend = fin;
+    try{ r.abort(); }catch(e){ fin(); }
+    setTimeout(fin, 900);
+  });
+}
 function ocVozStart(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){ document.getElementById('ocVStat').textContent = 'La voz no está disponible en este navegador'; return; }
-  try{ ocVR && ocVR.abort(); }catch(e){}
-  ocVR = new SR(); ocVR.lang = ocVozLangV; ocVR.interimResults = true; ocVR.continuous = false; ocVR.maxAlternatives = 1;
-  ocVR.onstart = ()=>{ ocVOn = true; document.getElementById('ocVoz').classList.add('listening'); document.getElementById('ocVStat').textContent = 'Escuchando'; };
-  ocVR.onresult = (e)=>{
+  const ses = ++ocVSes;
+  try{ if(typeof voiceRec!=='undefined' && voiceRec) voiceRec.abort(); }catch(e){}
+  if(ocVR){ document.getElementById('ocVStat').textContent = 'Preparando el micrófono…'; ocVozSoltar().then(()=>{ if(ses===ocVSes) ocVozCrear(SR, ses, false); }); }
+  else ocVozCrear(SR, ses, false);
+}
+function ocVozCrear(SR, ses, esReintento){
+  const stat = document.getElementById('ocVStat');
+  const rec = new SR(); ocVR = rec;
+  rec.lang = ocVozLangV; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+  let t0 = Date.now(), oyo = false, guardia = null;
+  const vigente = ()=> ses === ocVSes && ocVR === rec;
+  rec.onstart = ()=>{ if(!vigente()) return; t0 = Date.now(); ocVOn = true; document.getElementById('ocVoz').classList.add('listening'); stat.textContent = 'Escuchando';
+    clearTimeout(guardia); guardia = setTimeout(()=>{ if(vigente() && !oyo){ try{ rec.stop(); }catch(e){} } }, 8000); };
+  rec.onresult = (e)=>{
+    if(!vigente()) return;
+    oyo = true;
     let fin = '', inter = '';
     for(let i=0;i<e.results.length;i++){ const r = e.results[i]; if(r.isFinal) fin += r[0].transcript; else inter += r[0].transcript; }
     if(fin) ocVFinal = fin;
     const txt = (fin || inter).trim();
     document.getElementById('ocVTxt').textContent = txt ? '“' + txt + '”' : '';
     if(txt) ocVozMostrar(txt);
+    if(fin){ try{ rec.stop(); }catch(e){} }   // soltar el micrófono apenas hay texto final
   };
-  ocVR.onerror = (ev)=>{ document.getElementById('ocVStat').textContent = ev.error==='not-allowed' ? 'Permite el micrófono para usar la voz' : 'No te escuché bien, intenta de nuevo'; };
-  ocVR.onend = ()=>{ ocVOn = false; document.getElementById('ocVoz').classList.remove('listening'); if(ocVParsed && ocVParsed.monto) document.getElementById('ocVStat').textContent = '¿Está bien? Confirma para guardar'; else if(document.getElementById('ocVStat').textContent==='Escuchando') document.getElementById('ocVStat').textContent = 'Toca el micrófono para hablar'; };
-  try{ ocVR.start(); }catch(e){ document.getElementById('ocVStat').textContent = 'Toca el micrófono para hablar'; }
+  rec.onerror = (ev)=>{
+    if(!vigente()) return;
+    stat.textContent = ev.error==='not-allowed' ? 'Permite el micrófono para usar la voz'
+      : ev.error==='no-speech' ? 'No te escuché, toca el micrófono e intenta de nuevo'
+      : 'No te escuché bien, intenta de nuevo';
+  };
+  rec.onend = ()=>{
+    clearTimeout(guardia);
+    if(ocVR === rec) ocVR = null;
+    if(ses !== ocVSes) return;
+    ocVOn = false; document.getElementById('ocVoz').classList.remove('listening');
+    // iOS a veces cierra el dictado al instante sin abrir el micrófono: un reintento limpio
+    if(!oyo && !esReintento && Date.now() - t0 < 1500){ setTimeout(()=>{ if(ses===ocVSes) ocVozCrear(SR, ses, true); }, 350); return; }
+    if(ocVParsed && ocVParsed.monto) stat.textContent = '¿Está bien? Confirma para guardar';
+    else if(stat.textContent==='Escuchando' || stat.textContent==='Preparando el micrófono…') stat.textContent = 'Toca el micrófono para hablar';
+  };
+  try{ rec.start(); }
+  catch(e){ if(ocVR === rec) ocVR = null; stat.textContent = 'Toca el micrófono para hablar'; }
 }
 function ocVozMostrar(txt){
   const p = ocParse(txt); ocVParsed = p; ocVParsed._txt = txt;
