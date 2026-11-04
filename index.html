@@ -1239,6 +1239,11 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
   <div class="drawer-panel">
     <div class="drawer-title">Editar transacción</div>
     <input type="hidden" id="editId">
+    <input type="hidden" id="editTipo" value="gasto">
+    <div class="oc-seg big" role="group" aria-label="Tipo de movimiento" style="margin-bottom:14px;">
+      <button type="button" class="gasto on" id="editTipoG" onclick="editSetTipo('gasto',true)">Gasto</button>
+      <button type="button" class="ingreso" id="editTipoI" onclick="editSetTipo('ingreso',true)">Ingreso</button>
+    </div>
     <div class="form-group"><label>Monto</label><input type="number" id="editMonto"></div>
     <div class="form-group"><label>Descripción</label><input type="text" id="editDesc"></div>
     <div class="form-group"><label>Banco</label><input type="text" id="editBanco"></div>
@@ -2303,7 +2308,7 @@ function confirmAmount(){
   // 5h adelantado y al guardar se sumaban otras 5h → gastos de la noche
   // quedaban guardados como del día siguiente)
   document.getElementById('addFecha').value = new Date(Date.now() - 5*3600000).toISOString().slice(0,16);
-  fillCatSelect('addCat', 'otros');
+  fillCatSelect('addCat', tempTipo==='ingreso' ? 'ingresos' : 'otros');
   actualizarSubcatAdd();
 }
 
@@ -2446,8 +2451,21 @@ async function _ejecutarGuardarManual(){
 }
 
 // ===== EDIT / DELETE =====
+function editSetTipo(t, cambio){
+  document.getElementById('editTipo').value = t;
+  document.getElementById('editTipoG').classList.toggle('on', t==='gasto');
+  document.getElementById('editTipoI').classList.toggle('on', t==='ingreso');
+  if(cambio){
+    // Al cambiar de tipo, ajusta la categoría si quedó incoherente
+    const cat = getCatVal('editCat');
+    if(t==='ingreso' && (cat==='otros')) fillCatSelect('editCat','ingresos');
+    else if(t==='gasto' && cat==='ingresos') fillCatSelect('editCat','otros');
+    actualizarSubcatEdit();
+  }
+}
 function abrirEdit(id){
   const r = registros.find(x=>x.id===id); if(!r) return;
+  editSetTipo(r.tipo==='ingreso' ? 'ingreso' : 'gasto');
   document.getElementById('editId').value=id;
   document.getElementById('editMonto').value=r.monto;
   document.getElementById('editDesc').value=r.descripcion;
@@ -2481,7 +2499,8 @@ async function guardarEdit(){
     descripcion: document.getElementById('editDesc').value.trim(),
     banco: document.getElementById('editBanco').value.trim(),
     categoria: getCatVal('editCat'),
-    subcategoria: getSubcatVal('editSubcat')
+    subcategoria: getSubcatVal('editSubcat'),
+    tipo: document.getElementById('editTipo').value === 'ingreso' ? 'ingreso' : 'gasto'
   };
   // Parse determinístico como hora Colombia — antes se parseaba con
   // new Date(fechaRaw) (que ya convierte a UTC en un iPhone en Bogotá)
@@ -3876,7 +3895,9 @@ function ocParse(txt){
     if(ocAutoConv && ocFx && ocFx[moneda]) monto = Math.round(best.v * ocFx[moneda]);
   }
   // Tipo
-  const tipo = ocW('recib[ií]|recibimos|me pagaron|me consignaron|me depositaron|me abonaron|ingreso|n[oó]mina|salario|sueldo|me transfirieron|cobr[eé]').test(lower) ? 'ingreso' : 'gasto';
+  const esIngreso = ocW('recib[ií]|recib(?:imos|ido|idos|ida|idas|o)|me (?:pagaron|consignaron|depositaron|abonaron|transfirieron|devolvieron|prestaron|giraron|llegaron?|entr[oó])|ingres(?:o|os|[eé]|aron)|abono|abonos|dep[oó]sito|n[oó]mina|salario|sueldo|honorarios|reembolso|devoluci[oó]n|cobr[eé]|pr[eé]stamo recibido|cuenta de cobro pagada').test(lower);
+  const esGasto = ocW('gast[eéo]|pagu[eé]|compr[eé]|le pagu[eé]|me cobraron|pagamos|gasto').test(lower);
+  const tipo = (esIngreso && !esGasto) ? 'ingreso' : 'gasto';
   // Fecha
   let fechaRel = null;
   if(ocW('anteayer|antier').test(lower)) fechaRel = 'anteayer'; else if(ocW('ayer').test(lower)) fechaRel = 'ayer';
@@ -3889,12 +3910,12 @@ function ocParse(txt){
   if(best) desc = desc.slice(0, best.s) + ' ' + desc.slice(best.e);
   desc = desc.replace(OC_TAG_RE,' ')
     .replace(ocW('con (?:la |el |mi )?(?:tarjeta(?: de (?:d[eé]bito|cr[eé]dito))?|nequi|daviplata|bancolombia|davivienda|efectivo|apple pay|nubank|bbva|d[eé]bito|cr[eé]dito)|por (?:nequi|daviplata|apple pay)|en efectivo'),'$1 ')
-    .replace(ocW('le pagu[eé]|me cobraron|me pagaron|me consignaron|me depositaron|me abonaron|me transfirieron|gast[eé]|pagu[eé]|compr[eé]|pagamos|recib[ií]|recibimos|cobr[eé]'),'$1 ')
+    .replace(ocW('le pagu[eé]|me cobraron|me pagaron|me consignaron|me depositaron|me abonaron|me transfirieron|me devolvieron|me prestaron|me llegaron?|me entr[oó]|gast[eé]|pagu[eé]|compr[eé]|pagamos|recib[ií]|recibimos|recibidos?|recibidas?|ingres[eé]|cobr[eé]'),'$1 ')
     .replace(ocW('pesos|plata|lucas|luca|cop|usd|u\\$s|us|d[oó]lares?|dolar|eur|euros?|anteayer|antier|ayer|hoy'),'$1 ')
     .replace(/[€$]/g,' ')
     .replace(/\s+/g,' ').trim();
   for(let k=0;k<3;k++){
-    desc = desc.replace(/^(en|de|por|para|un|una|unos|el|la|los|las|y)\s+/i,'').replace(/\s+(en|de|por|para|con|y|el|la)$/i,'').trim();
+    desc = desc.replace(/^(en|de|del|al|por|para|un|una|unos|el|la|los|las|y)\s+/i,'').replace(/\s+(en|de|por|para|con|y|el|la)$/i,'').trim();
   }
   if(desc) desc = desc.charAt(0).toUpperCase() + desc.slice(1);
   const cat = parseKeywords(desc || raw, tipo);
@@ -4010,7 +4031,7 @@ async function ocQGuardar(){
 let ocVR = null, ocVOn = false, ocVParsed = null, ocVFinal = '';
 (function(){ const w = document.getElementById('ocWave'); if(w){ const hs=[10,18,30,22,40,56,34,62,48,70,44,58,36,66,50,30,46,24,38,20,28,14,20,10]; w.innerHTML = hs.map((h,i)=>`<i style="--h:${h}px;animation-delay:${(i%6)*0.09}s"></i>`).join(''); } })();
 function abrirVozFull(conGesto){
-  ocVParsed = null; ocVFinal = '';
+  ocVParsed = null; ocVFinal = ''; ocVTipoManual = null;
   document.getElementById('ocVTxt').textContent = '';
   document.getElementById('ocVChips').innerHTML = '';
   document.getElementById('ocVEdit').style.display = 'none';
@@ -4086,12 +4107,19 @@ function ocVozCrear(SR, ses, esReintento){
   try{ rec.start(); }
   catch(e){ if(ocVR === rec) ocVR = null; stat.textContent = 'Toca el micrófono para hablar'; }
 }
+let ocVTipoManual = null;
+function ocVozTipo(){
+  if(!ocVParsed) return;
+  ocVTipoManual = ocVParsed.tipo==='ingreso' ? 'gasto' : 'ingreso';
+  ocVozMostrar(ocVParsed._txt);
+}
 function ocVozMostrar(txt){
   const p = ocParse(txt); ocVParsed = p; ocVParsed._txt = txt;
+  if(ocVTipoManual && p.tipo!==ocVTipoManual){ p.tipo = ocVTipoManual; p.cat = parseKeywords(p.desc||txt, p.tipo); }
   const chips = [];
   if(p.monto) chips.push(ic('wallet') + ' ' + fmt(p.monto));
   chips.push((CAT_ICONS[p.cat]||ic('tag')) + ' ' + S(CAT_LABELS[p.cat]||p.cat));
-  chips.push((p.tipo==='ingreso'?ic('arrowin'):ic('arrowout')) + ' ' + (p.tipo==='ingreso'?'Ingreso':'Gasto'));
+  chips.push('<b role="button" tabindex="0" style="cursor:pointer;text-decoration:underline;" onclick="ocVozTipo()" aria-label="Cambiar entre gasto e ingreso">' + (p.tipo==='ingreso'?ic('arrowin'):ic('arrowout')) + ' ' + (p.tipo==='ingreso'?'Ingreso':'Gasto') + '</b>');
   if(p.banco) chips.push(ic('card') + ' ' + S(p.banco));
   chips.push(ic('calendar') + ' ' + (p.fechaRel==='ayer'?'Ayer':p.fechaRel==='anteayer'?'Anteayer':'Hoy'));
   p.tags.forEach(t=>chips.push(ic('hash') + ' ' + S(t)));
