@@ -1992,6 +1992,7 @@ function updateGamify(){
 
 // ===== UI: ANALISIS =====
 let insightsCatActiva = null;
+let bdSubsSel = new Set(); let bdSubsCat = null; let bdSubsList = [];
 function toggleAccordion(header){ const acc=header.parentElement; const was=acc.classList.contains('open'); document.querySelectorAll('.accordion').forEach(a=>a.classList.remove('open')); if(!was) acc.classList.add('open'); }
 function renderAnalisis(){
   const gastos = registros.filter(r=>r.tipo==='gasto');
@@ -2192,6 +2193,7 @@ function renderBreakdown(){
   if(!insightsCatActiva){ bdAcc.style.display='none'; return; }
   bdAcc.style.display='block';
   const cat = insightsCatActiva;
+  if(bdSubsCat!==cat){ bdSubsSel = new Set(); bdSubsCat = cat; }
   const txsCat = registros.filter(r=>r.tipo==='gasto'&&r.categoria===cat).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
   const total = txsCat.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
   const porSubcat={};
@@ -2200,10 +2202,17 @@ function renderBreakdown(){
   const porSubcatCount = {};
   txsCat.forEach(r=>{ const sc=r.subcategoria||'Sin clasificar'; porSubcatCount[sc]=(porSubcatCount[sc]||0)+1; });
 
-  const subcatHtml = Object.entries(porSubcat).sort((a,b)=>b[1]-a[1]).map(([sc,v])=>{
+  const subsOrd = Object.entries(porSubcat).sort((a,b)=>b[1]-a[1]);
+  bdSubsList = subsOrd.map(x=>x[0]);
+  bdSubsSel.forEach(s=>{ if(!(s in porSubcat)) bdSubsSel.delete(s); });
+  const hayFiltro = bdSubsSel.size>0;
+  const txsVis = hayFiltro ? txsCat.filter(r=>bdSubsSel.has(r.subcategoria||'Sin clasificar')) : txsCat;
+  const totalVis = txsVis.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
+  const limite = hayFiltro ? txsVis.length : 20;
+  const subcatHtml = subsOrd.map(([sc,v],i)=>{
     const pct = Math.round(v/total*100)||0;
     const count = porSubcatCount[sc]||0;
-    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    return `<div class="bd-sub ${bdSubsSel.has(sc)?'sel':''}" onclick="bdToggleSub(${i})" style="display:flex;align-items:center;gap:8px;">
       <div style="flex:1;min-width:0;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
           <span style="font-size:12px;font-weight:800;">${sc}</span>
@@ -2226,9 +2235,17 @@ function renderBreakdown(){
         <div style="font-size:12px;color:var(--text-3);">${txsCat.length} transacciones</div>
       </div>
     </div>
-    ${subcatHtml?`<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin-bottom:10px;">SUBCATEGORÍAS</div>${subcatHtml}`:''}
-    <div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:14px 0 10px;">TRANSACCIONES</div>
-    ${txsCat.slice(0,20).map(r=>`
+    ${subcatHtml?`<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin-bottom:10px;">SUBCATEGORÍAS <span style="font-weight:600;letter-spacing:0;">· toca para ver sus gastos</span></div><div class="bd-subs ${hayFiltro?'hay-sel':''}">${subcatHtml}</div>`:''}
+    <div id="bdTxHead" style="scroll-margin-top:150px;font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:14px 0 10px;">TRANSACCIONES</div>
+    ${hayFiltro?`<div class="bd-filtro">
+      <div style="min-width:0;flex:1;">
+        <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${[...bdSubsSel].map(s=>S(s)).join(' + ')}</div>
+        <div style="font-size:11px;color:var(--text-3);">${txsVis.length} transacciones</div>
+      </div>
+      <div style="font-size:16px;font-weight:900;color:var(--danger);flex-shrink:0;">${fmt(totalVis)}</div>
+      <button class="bd-clear" onclick="bdLimpiarSubs()">Ver todas</button>
+    </div>`:''}
+    ${txsVis.slice(0,limite).map(r=>`
       <div class="sw-wrap bd-wrap" data-id="${r.id}"><div class="sw-bg sw-cls">${ic('tag')}<span>Reclasificar</span></div><div class="sw-bg sw-del"><span>Eliminar</span>${ic('trash')}</div>
       <div class="sw-item" onclick='if(!swBloqClick)abrirEdit("${r.id}")' style="display:flex;align-items:center;gap:10px;padding:10px 0;cursor:pointer;">
         <div style="flex:1;min-width:0;">
@@ -2241,9 +2258,24 @@ function renderBreakdown(){
         </div>
         <div style="font-size:14px;font-weight:900;color:var(--danger);flex-shrink:0;">-${fmt(r.monto)}</div>
       </div></div>`).join('')}
-    ${txsCat.length>20?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:10px;">+${txsCat.length-20} más</div>`:''}
+    ${!hayFiltro&&txsCat.length>20?`<div style="text-align:center;color:var(--text-3);font-size:12px;padding:10px;">+${txsCat.length-20} más</div>`:''}
   `;
   bdAcc.classList.add('open');
+}
+// Seleccionar / deseleccionar subcategorías del Break Down (multi-selección)
+function bdToggleSub(i){
+  const sc = bdSubsList[i]; if(sc===undefined) return;
+  const eraVacio = bdSubsSel.size===0;
+  if(bdSubsSel.has(sc)) bdSubsSel.delete(sc); else bdSubsSel.add(sc);
+  renderBreakdown();
+  if(eraVacio && bdSubsSel.size){
+    const h = document.getElementById('bdTxHead');
+    if(h) setTimeout(()=>h.scrollIntoView({behavior:'smooth',block:'start'}), 60);
+  }
+}
+function bdLimpiarSubs(){
+  bdSubsSel = new Set();
+  renderBreakdown();
 }
 // ===== UI: METAS =====
 function renderMetas(){
@@ -4328,6 +4360,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 .sw-snack.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
 .sw-snack span{white-space:nowrap;}
 .sw-snack button{background:none;border:0;color:#B3B1FF;font-weight:800;font-size:14px;cursor:pointer;}
+.bd-sub{padding:9px 10px;margin-bottom:6px;border-radius:12px;border:.5px solid transparent;cursor:pointer;transition:background .15s,opacity .15s;-webkit-tap-highlight-color:transparent;}
+.bd-sub:active{background:var(--glass2);}
+.bd-sub.sel{background:rgba(94,92,230,.22);border-color:rgba(94,92,230,.55);}
+.bd-subs.hay-sel .bd-sub:not(.sel){opacity:.5;}
+.bd-filtro{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:4px;border-radius:12px;background:rgba(94,92,230,.16);border:.5px solid rgba(94,92,230,.45);}
+.bd-clear{flex-shrink:0;padding:7px 11px;border-radius:999px;background:var(--glass2);border:.5px solid var(--gline);color:#fff;font:700 12px/1 inherit;cursor:pointer;}
 tr.cat-tap{cursor:pointer;transition:background .15s;}
 tr.cat-tap:active td{background:var(--glass2);}
 tr.cat-tap.activa td{background:rgba(94,92,230,.22);}
