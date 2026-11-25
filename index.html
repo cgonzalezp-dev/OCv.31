@@ -1436,6 +1436,13 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
   <div class="drawer-panel">
     <div class="drawer-title">Clasificar gasto</div>
     <p id="clasifPreview" style="color:var(--text-3);font-size:13px;margin:-4px 0 14px;"></p>
+    <div style="font-size:12px;font-weight:700;color:var(--text-3);margin-bottom:8px;letter-spacing:.4px;">ETIQUETAS</div>
+    <div class="sw-chips" id="clasifTags"></div>
+    <div class="sw-nueva" style="margin-top:10px;margin-bottom:16px;">
+      <input type="text" id="clasifTagTxt" maxlength="30" placeholder="Nueva etiqueta, ej. viaje" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')swTagAgregar()">
+      <button class="btn btn-secondary" onclick="swTagAgregar()">Agregar</button>
+    </div>
+    <div style="font-size:12px;font-weight:700;color:var(--text-3);margin-bottom:8px;letter-spacing:.4px;">CATEGORÍA</div>
     <div class="sw-chips" id="clasifCats"></div>
     <div id="clasifSubWrap" style="display:none;margin-top:16px;">
       <div style="font-size:12px;font-weight:700;color:var(--text-3);margin-bottom:8px;letter-spacing:.4px;">SUBCATEGORÍA</div>
@@ -4465,17 +4472,40 @@ function swRefrescarAnalisis(){
 window.addEventListener('pagehide', ()=>{ if(swPend) swConfirmar(); });
 
 // ── Clasificar (categoría → subcategoría) ──
-let swClsId = null, swClsCat = null;
-function swAbrirClasif(id){
+let swClsId = null, swClsCat = null, swClsTags = new Set();
+function swAbrirClasif(id, conservarTags){
   const r = registros.find(x=>x.id===id); if(!r) return;
   swClsId = id; swClsCat = r.categoria || null;
-  document.getElementById('clasifPreview').textContent = S(r.descripcion) + ' · ' + fmt(r.monto);
+  if(!conservarTags) swClsTags = new Set(ocTagsDe(r.descripcion));
+  swRenderTags();
+  document.getElementById('clasifTagTxt').value = '';
+  document.getElementById('clasifPreview').textContent = (ocSinTags(r.descripcion) || S(r.descripcion)) + ' · ' + fmt(r.monto);
   document.getElementById('clasifCats').innerHTML = catList.filter(c=>c.id!=='ingresos' || r.tipo==='ingreso')
     .map(c=>`<button class="sw-chip ${c.id===r.categoria?'sel':''}" onclick="swElegirCat('${c.id}')">${catIcon(c.icon)}${S(c.label)}</button>`).join('')
     + `<button class="sw-chip nueva" onclick="swPedirNueva('cat')">${ic('plus')}Nueva categoría</button>`;
   document.getElementById('clasifSubWrap').style.display = 'none';
   document.getElementById('clasifNueva').style.display = 'none';
   show('drawerClasif');
+}
+// ── Etiquetas (#viaje, #hogar…) dentro del cajón de clasificar ──
+function swRenderTags(){
+  const lista = ocTagsFav.concat([...swClsTags].filter(t=>!ocTagsFav.includes(t)));
+  document.getElementById('clasifTags').innerHTML = lista.map(t=>`<button class="sw-chip ${swClsTags.has(t)?'sel':''}" onclick="swTagToggle('${S(t)}')" aria-pressed="${swClsTags.has(t)}">#${S(t)}</button>`).join('')
+    || '<span style="font-size:13px;color:var(--text-3);">Sin etiquetas. Crea una abajo.</span>';
+}
+function swTagToggle(t){
+  if(swClsTags.has(t)) swClsTags.delete(t); else swClsTags.add(t);
+  swRenderTags();
+}
+function swTagAgregar(){
+  const el = document.getElementById('clasifTagTxt');
+  const t = String(el.value||'').replace(/^#+/,'').trim().toLowerCase().replace(/\s+/g,'-');
+  if(!t) return;
+  if(!/^[\p{L}\p{N}_-]+$/u.test(t)){ toast('Usa solo letras, números o guiones'); return; }
+  if(!ocTagsFav.includes(t)){ ocTagsFav.push(t); ocSave('oc_tags', ocTagsFav); }   // queda como favorita
+  swClsTags.add(t);
+  el.value = '';
+  swRenderTags();
 }
 function swElegirCat(cat){
   swClsCat = cat;
@@ -4507,7 +4537,7 @@ function swCrearNueva(){
     guardarCategorias();
     toast(`Categoría "${nombre}" creada`);
     const r = registros.find(x=>x.id===swClsId);
-    if(r){ swAbrirClasif(r.id); }
+    if(r){ swAbrirClasif(r.id, true); }
     swElegirCat(id);
   } else {
     const c = catList.find(x=>x.id===swClsCat); if(!c) return;
@@ -4522,10 +4552,16 @@ async function swGuardarClasif(sub){
   hide('drawerClasif');
   const r = registros.find(x=>x.id===id);
   try{
-    await editarRec(id, { categoria: cat, subcategoria: sub || 'General' });
+    const cambios = { categoria: cat, subcategoria: sub || 'General' };
+    if(r){
+      const antes = ocTagsDe(r.descripcion).sort().join(','), ahora = [...swClsTags].sort().join(',');
+      if(antes !== ahora) cambios.descripcion = (ocSinTags(r.descripcion) + ' ' + [...swClsTags].map(t=>'#'+t).join(' ')).trim();
+    }
+    const base = r ? ocSinTags(r.descripcion) : '';
+    await editarRec(id, cambios);
     swRefrescarAnalisis();
     // Enseña al lector de Gmail: la próxima compra en este comercio sale ya clasificada
-    if(r && r.descripcion) swAprender(r.descripcion, cat);
+    if(base) swAprender(base, cat);
   }catch(e){}
 }
 function swAprender(desc, cat){
