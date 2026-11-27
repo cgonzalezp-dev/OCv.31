@@ -772,6 +772,7 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
     <div class="pill" onclick="filterHome('hoy',this)">Hoy</div>
     <div class="pill" onclick="filterHome('gasto',this)">Gastos</div>
     <div class="pill" onclick="filterHome('ingreso',this)">Ingresos</div>
+    <div class="pill ms-pill" onclick="event.stopPropagation();msToggle()">Seleccionar</div>
   </div>
 
   <div class="feed" id="homeFeed"></div>
@@ -811,6 +812,14 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
 <div id="sc-analisis" class="screen">
   <div class="header-card"><button class="header-back" onclick="irA('home')" aria-label="Volver"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><h1>Análisis</h1><p>Insights y patrones</p></div>
 
+  <div class="oc-scroll" id="anRangos" style="margin-bottom:4px;"></div>
+  <div class="oc-range" id="anRangoBox" style="display:none;">
+    <div><label for="anDesde">Desde</label><input type="date" id="anDesde" onchange="anCambioFechas()"></div>
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--text-2)"><path d="m9 6 6 6-6 6"/></svg>
+    <div><label for="anHasta">Hasta</label><input type="date" id="anHasta" onchange="anCambioFechas()"></div>
+  </div>
+  <div class="an-lbl" id="anRangoLbl"></div>
+
   <div class="accordion open" id="acc-presupuesto">
     <div class="accordion-header" onclick="toggleAccordion(this)"><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5a2.5 2.5 0 0 1 2.5-2.5H17v3"/><rect x="4" y="7.5" width="16.5" height="12" rx="2.5"/><path d="M16 13.5h1.5"/></svg> Presupuesto</span><span class="chevron">▼</span></div>
     <div class="accordion-body"><div class="accordion-content" id="presupuestoContent"></div></div>
@@ -819,6 +828,11 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
   <div class="accordion open" id="acc-insights">
     <div class="accordion-header" onclick="toggleAccordion(this)"><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M18.5 15.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg> Insights</span><span class="chevron">▼</span></div>
     <div class="accordion-body"><div class="accordion-content" id="insightsContent"></div></div>
+  </div>
+
+  <div class="accordion" id="acc-tags">
+    <div class="accordion-header" onclick="toggleAccordion(this)"><span><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4 8 20M16 4l-2 16M4.5 9h15M4 15h15"/></svg> Por etiqueta</span><span class="chevron">▼</span></div>
+    <div class="accordion-body"><div class="accordion-content" id="tagsContent"></div></div>
   </div>
 
   <div class="accordion" id="acc-tiempo">
@@ -999,6 +1013,7 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
     <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--text-2)"><path d="m9 6 6 6-6 6"/></svg>
     <div><label for="ocHasta">Hasta</label><input type="date" id="ocHasta" onchange="ocBuscar()"></div>
   </div>
+  <div style="display:flex;justify-content:flex-end;margin-top:10px;"><button class="oc-chip ms-pill" onclick="msToggle()">Seleccionar</button></div>
   <div class="oc-sum" id="ocSum" style="margin-top:12px;"></div>
   <div class="oc-sr" id="ocResultados"></div>
 </div>
@@ -1452,7 +1467,33 @@ body.oc-hide-in .balance-row{grid-template-columns:1fr;}
       <input type="text" id="clasifNuevaTxt" maxlength="40" autocomplete="off" onkeydown="if(event.key==='Enter')swCrearNueva()">
       <button class="btn btn-primary" onclick="swCrearNueva()">Crear y usar</button>
     </div>
-    <div class="btn-row" style="margin-top:18px;"><button class="btn btn-secondary" onclick="cerrarDrawer('drawerClasif')">Cancelar</button></div>
+    <div class="btn-row" style="margin-top:18px;"><button class="btn btn-secondary" onclick="cerrarDrawer('drawerClasif')">Cancelar</button><button class="btn btn-primary" onclick="swGuardarActual()">Guardar</button></div>
+  </div>
+</div>
+
+<!-- Selección múltiple: barra de acciones -->
+<div class="ms-bar" id="msBar" role="toolbar" aria-label="Selección múltiple">
+  <span id="msCount">0 seleccionados</span>
+  <button onclick="msTodos()">Todos</button>
+  <button class="ms-edit" onclick="msAbrirEditor()">Editar</button>
+  <button onclick="msSalir()" aria-label="Cancelar selección">Cancelar</button>
+</div>
+<!-- Edición masiva -->
+<div class="drawer" id="drawerMasivo" onclick="if(event.target===this)cerrarDrawer('drawerMasivo')">
+  <div class="drawer-panel">
+    <div class="drawer-title" id="msTitulo">Editar movimientos</div>
+    <p id="msResumen" style="color:var(--text-3);font-size:13px;margin:-4px 0 14px;"></p>
+    <div class="ms-lbl">AGREGAR ETIQUETAS</div>
+    <div class="sw-chips" id="msTagsAdd"></div>
+    <div class="sw-nueva" style="margin-top:10px;margin-bottom:16px;">
+      <input type="text" id="msTagTxt" maxlength="30" placeholder="Nueva etiqueta, ej. viaje" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')msTagNueva()">
+      <button class="btn btn-secondary" onclick="msTagNueva()">Agregar</button>
+    </div>
+    <div id="msQuitarWrap"><div class="ms-lbl">QUITAR ETIQUETAS</div><div class="sw-chips" id="msTagsDel" style="margin-bottom:16px;"></div></div>
+    <div class="ms-lbl">CATEGORÍA</div>
+    <div class="sw-chips" id="msCats"></div>
+    <div id="msSubWrap" style="display:none;margin-top:16px;"><div class="ms-lbl">SUBCATEGORÍA</div><div class="sw-chips" id="msSubs"></div></div>
+    <div class="btn-row" style="margin-top:18px;"><button class="btn btn-secondary" onclick="cerrarDrawer('drawerMasivo')">Cancelar</button><button class="btn btn-primary" id="msAplicarBtn" onclick="msAplicar()">Aplicar</button></div>
   </div>
 </div>
 
@@ -2003,14 +2044,15 @@ let insightsCatActiva = null;
 let bdSubsSel = new Set(); let bdSubsCat = null; let bdSubsList = [];
 function toggleAccordion(header){ const acc=header.parentElement; const was=acc.classList.contains('open'); document.querySelectorAll('.accordion').forEach(a=>a.classList.remove('open')); if(!was) acc.classList.add('open'); }
 function renderAnalisis(){
-  const gastos = registros.filter(r=>r.tipo==='gasto');
+  const regs = (typeof anDatos==='function') ? anDatos() : registros;
+  const gastos = regs.filter(r=>r.tipo==='gasto');
   const total = gastos.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
-  const ingresos = registros.filter(r=>r.tipo==='ingreso');
+  const ingresos = regs.filter(r=>r.tipo==='ingreso');
   const totalIn = ingresos.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
   const promedio = gastos.length?Math.round(total/gastos.length):0;
   const porCat = {}; gastos.forEach(r=>{ porCat[r.categoria]=(porCat[r.categoria]||0)+(parseInt(r.monto)||0); });
   const topCat = Object.entries(porCat).sort((a,b)=>b[1]-a[1])[0];
-  const last = registros[0];
+  const last = regs[0];
   const catEntries = Object.entries(porCat).sort((a,b)=>b[1]-a[1]);
   const catPillsHtml = `
     <div style="margin-bottom:14px;">
@@ -2202,7 +2244,7 @@ function renderBreakdown(){
   bdAcc.style.display='block';
   const cat = insightsCatActiva;
   if(bdSubsCat!==cat){ bdSubsSel = new Set(); bdSubsCat = cat; }
-  const txsCat = registros.filter(r=>r.tipo==='gasto'&&r.categoria===cat).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  const txsCat = ((typeof anDatos==='function') ? anDatos() : registros).filter(r=>r.tipo==='gasto'&&r.categoria===cat).sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
   const total = txsCat.reduce((a,b)=>a+(parseInt(b.monto)||0),0);
   const porSubcat={};
   txsCat.forEach(r=>{ const sc=r.subcategoria||'Sin clasificar'; porSubcat[sc]=(porSubcat[sc]||0)+(parseInt(r.monto)||0); });
@@ -2244,7 +2286,7 @@ function renderBreakdown(){
       </div>
     </div>
     ${subcatHtml?`<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin-bottom:10px;">SUBCATEGORÍAS <span style="font-weight:600;letter-spacing:0;">· toca para ver sus gastos</span></div><div class="bd-subs ${hayFiltro?'hay-sel':''}">${subcatHtml}</div>`:''}
-    <div id="bdTxHead" style="scroll-margin-top:150px;font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:14px 0 10px;">TRANSACCIONES</div>
+    <div id="bdTxHead" style="scroll-margin-top:150px;font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:14px 0 10px;display:flex;justify-content:space-between;align-items:center;">TRANSACCIONES<button class="bd-clear ms-pill" onclick="msToggle()">Seleccionar</button></div>
     ${hayFiltro?`<div class="bd-filtro">
       <div style="min-width:0;flex:1;">
         <div style="font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${[...bdSubsSel].map(s=>S(s)).join(' + ')}</div>
@@ -4389,6 +4431,7 @@ let swBloqClick = false;
   function pos(e){ const t = e.touches ? e.touches[0] : e; return {x:t.clientX, y:t.clientY}; }
   function inicio(e){
     const w = fila(e); if(!w) return;
+    if(typeof msOn!=='undefined' && msOn) return;   // en modo selección no hay swipe
     const p = pos(e);
     st = { w, row:w.querySelector('.tx-row,.sw-item'), cls:w.querySelector('.sw-cls'), del:w.querySelector('.sw-del'),
            x0:p.x, y0:p.y, dx:0, modo:null, ancho:w.offsetWidth };
@@ -4511,8 +4554,10 @@ function swElegirCat(cat){
   swClsCat = cat;
   document.querySelectorAll('#clasifCats .sw-chip').forEach(b=>b.classList.toggle('sel', b.getAttribute('onclick').includes("'"+cat+"'")));
   const subs = SUBCATS[cat] || [];
+  const rAct = registros.find(x=>x.id===swClsId);
+  const subAct = rAct && rAct.categoria===cat ? rAct.subcategoria : null;
   document.getElementById('clasifNueva').style.display = 'none';
-  document.getElementById('clasifSubs').innerHTML = subs.map((s,i)=>`<button class="sw-chip" onclick="swGuardarClasif(SUBCATS['${cat}'][${i}])">${S(s)}</button>`).join('')
+  document.getElementById('clasifSubs').innerHTML = subs.map((s,i)=>`<button class="sw-chip ${s===subAct?'sel':''}" onclick="swGuardarClasif(SUBCATS['${cat}'][${i}])">${S(s)}</button>`).join('')
     + `<button class="sw-chip" onclick="swGuardarClasif('')">Sin subcategoría</button>`
     + `<button class="sw-chip nueva" onclick="swPedirNueva('sub')">${ic('plus')}Nueva subcategoría</button>`;
   document.getElementById('clasifSubWrap').style.display = 'block';
@@ -4547,6 +4592,24 @@ function swCrearNueva(){
     swGuardarClasif(ya || nombre);
   }
 }
+// Guardar lo que haya cambiado (solo etiquetas, solo categoría o ambas) sin pasar por la subcategoría
+function swGuardarActual(){
+  const r = registros.find(x=>x.id===swClsId); if(!r) return;
+  const tagsCambian = ocTagsDe(r.descripcion).sort().join(',') !== [...swClsTags].sort().join(',');
+  const cat = swClsCat || r.categoria;
+  const catCambia = !!swClsCat && swClsCat !== r.categoria;
+  if(!tagsCambian && !catCambia){ hide('drawerClasif'); toast('Sin cambios'); return; }
+  if(!cat){ swGuardarSoloTags(r); return; }
+  swClsCat = cat;
+  swGuardarClasif(catCambia ? 'General' : (r.subcategoria || 'General'));
+}
+async function swGuardarSoloTags(r){
+  hide('drawerClasif');
+  try{
+    await editarRec(r.id, { descripcion: (ocSinTags(r.descripcion) + ' ' + [...swClsTags].map(t=>'#'+t).join(' ')).trim() });
+    swRefrescarAnalisis();
+  }catch(e){}
+}
 async function swGuardarClasif(sub){
   const id = swClsId, cat = swClsCat; if(!id || !cat) return;
   hide('drawerClasif');
@@ -4575,6 +4638,351 @@ function swAprender(desc, cat){
     body: JSON.stringify({ descripcion_base: base, categoria: cat })
   }).catch(()=>{});
 }
+</script>
+<style>
+/* ── Selección múltiple tipo Gmail ── */
+.ms-pill.on{background:#5E5CE6!important;border-color:transparent!important;color:#fff!important;}
+body.ms-on .sw-wrap .tx-row,body.ms-on .sw-wrap .sw-item{padding-left:38px;transition:padding .15s ease;}
+body.ms-on .sw-wrap::before{content:'';position:absolute;left:6px;top:50%;width:20px;height:20px;margin-top:-11px;border-radius:50%;border:1.5px solid var(--gline);background:var(--glass2);z-index:2;pointer-events:none;}
+body.ms-on .sw-wrap.ms-sel::before{background:#5E5CE6;border-color:#5E5CE6;}
+body.ms-on .sw-wrap.ms-sel::after{content:'';position:absolute;left:13px;top:50%;width:5px;height:10px;margin-top:-8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);z-index:3;pointer-events:none;}
+body.ms-on .sw-wrap.ms-sel{background:rgba(94,92,230,.14);}
+.ms-bar{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:150;display:flex;align-items:center;gap:6px;padding:8px 8px 8px 16px;border-radius:18px;background:var(--sheet);backdrop-filter:blur(30px) saturate(170%);-webkit-backdrop-filter:blur(30px) saturate(170%);border:.5px solid var(--gline);color:#fff;font-size:14px;font-weight:700;transition:.2s ease;width:calc(100% - 32px);max-width:460px;box-sizing:border-box;}
+.ms-bar.show{opacity:1;transform:translate(-50%,0);pointer-events:auto;}
+.ms-bar span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ms-bar button{background:none;border:0;color:#B3B1FF;font:700 14px/1 inherit;padding:10px 8px;cursor:pointer;flex-shrink:0;}
+.ms-bar button.ms-edit{background:#5E5CE6;color:#fff;border-radius:12px;padding:10px 14px;}
+.ms-bar button:disabled{opacity:.4;}
+.ms-lbl{font-size:12px;font-weight:700;color:var(--text-3);margin-bottom:8px;letter-spacing:.4px;}
+.sw-chip.quitar.sel{background:#FF375F;}
+/* ── Análisis: período y etiquetas ── */
+.an-lbl{font-size:12px;color:var(--text-3);margin:8px 2px 12px;}
+.an-tag{padding:10px;margin-bottom:6px;border-radius:12px;border:.5px solid transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.an-tag:active{background:var(--glass2);}
+.an-tag.sel{background:rgba(94,92,230,.22);border-color:rgba(94,92,230,.55);}
+.an-tag .t-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;}
+.an-tag .t-n{font-size:13px;font-weight:800;}
+.an-tag .t-v{font-size:13px;font-weight:900;flex-shrink:0;}
+.an-tag .t-s{font-size:11px;color:var(--text-3);margin-top:4px;display:flex;justify-content:space-between;}
+</style>
+<script>
+// ════════════════════════════════════════════════════════════
+// Selección múltiple (tipo Gmail) + edición masiva
+// ════════════════════════════════════════════════════════════
+var msOn = false;
+let msSel = new Set();
+function msRec(id){
+  id = String(id);
+  return registros.find(x=>String(x.id)===id) || (typeof ocUltimos!=='undefined' && ocUltimos.find(x=>String(x.id)===id)) || anRemoto.find(x=>String(x.id)===id) || null;
+}
+function msToggle(){ msOn ? msSalir() : msEntrar(); }
+function msEntrar(){
+  msOn = true; msSel = new Set();
+  document.body.classList.add('ms-on');
+  msPintar();
+  toast('Toca los movimientos que quieras editar');
+}
+function msSalir(){
+  msOn = false; msSel = new Set();
+  document.body.classList.remove('ms-on');
+  msPintar();
+}
+function msPintar(){
+  document.querySelectorAll('.sw-wrap[data-id]').forEach(w=>w.classList.toggle('ms-sel', msOn && msSel.has(String(w.dataset.id))));
+  const txt = msOn ? 'Cancelar selección' : 'Seleccionar';
+  document.querySelectorAll('.ms-pill').forEach(b=>{ b.classList.toggle('on', msOn); if(b.textContent!==txt) b.textContent = txt; });
+  const bar = document.getElementById('msBar');
+  bar.classList.toggle('show', msOn);
+  const n = msSel.size;
+  const cTxt = n===1 ? '1 seleccionado' : n + ' seleccionados';
+  const cEl = document.getElementById('msCount'); if(cEl.textContent!==cTxt) cEl.textContent = cTxt;
+  bar.querySelector('.ms-edit').disabled = n===0;
+}
+function msVisibles(){
+  const sc = document.querySelector('.screen.active'); if(!sc) return [];
+  return [...sc.querySelectorAll('.sw-wrap[data-id]')].filter(w=>w.offsetParent!==null).map(w=>String(w.dataset.id));
+}
+function msTodos(){
+  const ids = msVisibles();
+  const todos = ids.length && ids.every(id=>msSel.has(id));
+  if(todos) ids.forEach(id=>msSel.delete(id)); else ids.forEach(id=>msSel.add(id));
+  msPintar();
+}
+// En modo selección, tocar una fila la marca en vez de abrirla
+document.addEventListener('click', e=>{
+  if(!msOn) return;
+  const w = e.target.closest && e.target.closest('.sw-wrap[data-id]'); if(!w) return;
+  e.preventDefault(); e.stopPropagation();
+  const id = String(w.dataset.id);
+  if(msSel.has(id)) msSel.delete(id); else msSel.add(id);
+  msPintar();
+}, true);
+// Las listas se redibujan a menudo: vuelve a marcar lo seleccionado
+new MutationObserver(()=>{ if(msOn) requestAnimationFrame(msPintar); })
+  .observe(document.getElementById('app') || document.body, {childList:true, subtree:true});
+// Al cambiar de pantalla se sale del modo selección
+(function(){ const _irA = irA; irA = function(s){ if(msOn) msSalir(); return _irA.apply(this, arguments); }; })();
+
+// ── Editor masivo ──
+let msAdd = new Set(), msDel = new Set(), msCat = null, msSub = '';
+function msAbrirEditor(){
+  if(!msSel.size) return;
+  msAdd = new Set(); msDel = new Set(); msCat = null; msSub = '';
+  const recs = [...msSel].map(msRec).filter(Boolean);
+  const total = recs.reduce((a,r)=>a+(parseInt(r.monto)||0),0);
+  document.getElementById('msTitulo').textContent = recs.length===1 ? 'Editar 1 movimiento' : `Editar ${recs.length} movimientos`;
+  document.getElementById('msResumen').textContent = 'Total ' + fmt(total) + ' · solo cambia lo que marques';
+  document.getElementById('msTagTxt').value = '';
+  msRenderEditor();
+  show('drawerMasivo');
+}
+function msTagsEnSeleccion(){
+  const cnt = {};
+  [...msSel].map(msRec).filter(Boolean).forEach(r=>ocTagsDe(r.descripcion).forEach(t=>{ cnt[t]=(cnt[t]||0)+1; }));
+  return cnt;
+}
+function msRenderEditor(){
+  const enSel = msTagsEnSeleccion();
+  const lista = ocTagsFav.concat([...msAdd].filter(t=>!ocTagsFav.includes(t)));
+  document.getElementById('msTagsAdd').innerHTML = lista.map(t=>`<button class="sw-chip ${msAdd.has(t)?'sel':''}" onclick="msTagAdd('${S(t)}')" aria-pressed="${msAdd.has(t)}">#${S(t)}</button>`).join('')
+    || '<span style="font-size:13px;color:var(--text-3);">Sin etiquetas. Crea una abajo.</span>';
+  const presentes = Object.keys(enSel).sort((a,b)=>enSel[b]-enSel[a]);
+  document.getElementById('msQuitarWrap').style.display = presentes.length ? 'block' : 'none';
+  document.getElementById('msTagsDel').innerHTML = presentes.map(t=>`<button class="sw-chip quitar ${msDel.has(t)?'sel':''}" onclick="msTagDel('${S(t)}')" aria-pressed="${msDel.has(t)}">#${S(t)} <span style="opacity:.6;font-weight:500;">${enSel[t]}</span></button>`).join('');
+  document.getElementById('msCats').innerHTML = `<button class="sw-chip ${msCat===null?'sel':''}" onclick="msElegirCat(null)">Sin cambios</button>`
+    + catList.map(c=>`<button class="sw-chip ${c.id===msCat?'sel':''}" onclick="msElegirCat('${c.id}')">${catIcon(c.icon)}${S(c.label)}</button>`).join('');
+  const subWrap = document.getElementById('msSubWrap');
+  if(msCat){
+    const subs = SUBCATS[msCat] || [];
+    document.getElementById('msSubs').innerHTML = subs.map((s,i)=>`<button class="sw-chip ${s===msSub?'sel':''}" onclick="msElegirSub(${i})">${S(s)}</button>`).join('')
+      + `<button class="sw-chip ${msSub===''?'sel':''}" onclick="msElegirSub(-1)">Sin subcategoría</button>`;
+    subWrap.style.display = 'block';
+  } else subWrap.style.display = 'none';
+}
+function msTagAdd(t){ if(msAdd.has(t)) msAdd.delete(t); else { msAdd.add(t); msDel.delete(t); } msRenderEditor(); }
+function msTagDel(t){ if(msDel.has(t)) msDel.delete(t); else { msDel.add(t); msAdd.delete(t); } msRenderEditor(); }
+function msTagNueva(){
+  const el = document.getElementById('msTagTxt');
+  const t = String(el.value||'').replace(/^#+/,'').trim().toLowerCase().replace(/\s+/g,'-');
+  if(!t) return;
+  if(!/^[\p{L}\p{N}_-]+$/u.test(t)){ toast('Usa solo letras, números o guiones'); return; }
+  if(!ocTagsFav.includes(t)){ ocTagsFav.push(t); ocSave('oc_tags', ocTagsFav); }
+  msAdd.add(t); msDel.delete(t); el.value = '';
+  msRenderEditor();
+}
+function msElegirCat(id){ msCat = id; msSub = ''; msRenderEditor(); }
+function msElegirSub(i){ msSub = i<0 ? '' : (SUBCATS[msCat]||[])[i] || ''; msRenderEditor(); }
+function msCambiosDe(r){
+  const c = {};
+  if(msAdd.size || msDel.size){
+    const antes = ocTagsDe(r.descripcion);
+    const set = new Set(antes); msAdd.forEach(t=>set.add(t)); msDel.forEach(t=>set.delete(t));
+    if([...set].sort().join(',') !== [...new Set(antes)].sort().join(','))
+      c.descripcion = (ocSinTags(r.descripcion) + ' ' + [...set].map(t=>'#'+t).join(' ')).trim();
+  }
+  if(msCat){
+    const sub = msSub || 'General';
+    if(r.categoria!==msCat || (r.subcategoria||'General')!==sub){ c.categoria = msCat; c.subcategoria = sub; }
+  }
+  return c;
+}
+function msActualizarLocal(id, data){
+  const k = String(id);
+  [registros, (typeof ocUltimos!=='undefined'?ocUltimos:[]), anRemoto].forEach(arr=>{
+    const i = arr.findIndex(x=>String(x.id)===k); if(i>=0) arr[i] = {...arr[i], ...data};
+  });
+}
+async function msAplicar(){
+  if(!msAdd.size && !msDel.size && !msCat){ toast('Marca una etiqueta o una categoría'); return; }
+  if(!SUPABASE_URL || !SUPABASE_KEY){ toast('Sin conexión a Supabase'); return; }
+  const trabajos = [...msSel].map(msRec).filter(Boolean).map(r=>({ r, c: msCambiosDe(r) })).filter(x=>Object.keys(x.c).length);
+  if(!trabajos.length){ hide('drawerMasivo'); toast('Ya estaban así: sin cambios'); msSalir(); return; }
+  const btn = document.getElementById('msAplicarBtn'); btn.disabled = true;
+  let ok = 0, fallos = 0, i = 0;
+  async function worker(){
+    while(i < trabajos.length){
+      const {r, c} = trabajos[i++];
+      try{
+        const data = await sbFetch('PATCH', 'gastos?id=eq.' + encodeURIComponent(r.id), sanitizePayload(c, COLS_GASTOS));
+        msActualizarLocal(r.id, (data && data[0]) || c); ok++;
+      }catch(e){ console.error('masivo', r.id, e); fallos++; }
+      btn.textContent = `Guardando ${ok+fallos}/${trabajos.length}…`;
+    }
+  }
+  await Promise.all([worker(), worker(), worker(), worker()]);
+  btn.disabled = false; btn.textContent = 'Aplicar';
+  hide('drawerMasivo');
+  // Enseña al lector de Gmail la nueva categoría de cada comercio
+  if(msCat){ const vistos = new Set(); trabajos.forEach(({r})=>{ const b = ocSinTags(r.descripcion); if(b && !vistos.has(b)){ vistos.add(b); swAprender(b, msCat); } }); }
+  msSalir();
+  updateStats(); renderHome();
+  if(document.getElementById('sc-buscar')?.classList.contains('active')) ocBuscar();
+  if(document.getElementById('sc-analisis')?.classList.contains('active')) renderAnalisis();
+  toast(fallos ? `${ok} actualizados · ${fallos} con error` : (ok===1 ? '1 movimiento actualizado' : `${ok} movimientos actualizados`));
+}
+
+// ════════════════════════════════════════════════════════════
+// Análisis: período personalizable + sección Por etiqueta
+// ════════════════════════════════════════════════════════════
+const AN_RANGOS = [['ciclo','Este ciclo'],['ant','Ciclo anterior'],['90','90 días'],['anio','Este año'],['rango','Rango']];
+let anRango = ocLS('oc_an_rango', '90');
+if(!AN_RANGOS.some(([k])=>k===anRango)) anRango = '90';
+let anRemoto = [], anRemotoKey = '', anCargando = false, anSeq = 0, anTagSel = null;
+function anLimites(){
+  const hoy = hoyStr();
+  if(anRango==='ciclo'){ const rg = ocRango(0); return [rg.ini, rg.fin]; }
+  if(anRango==='ant'){ const rg = ocRango(-1); return [rg.ini, rg.fin]; }
+  if(anRango==='anio') return [hoy.slice(0,4)+'-01-01', hoy];
+  if(anRango==='rango'){
+    const d = document.getElementById('anDesde').value || ocLS('oc_an_desde',''), h = document.getElementById('anHasta').value || ocLS('oc_an_hasta','');
+    let a = d || fechaDiaCol(haceDiasUTC(30)), b = h || hoy;
+    if(a > b) [a, b] = [b, a];
+    return [a, b];
+  }
+  return [anIniLocal(), hoy];
+}
+// Primer día que cubren los registros cargados al iniciar (90 días)
+function anIniLocal(){ return fechaDiaCol(haceDiasUTC(89)); }
+function anDatos(){
+  const [ini, fin] = anLimites();
+  const enRango = r=>{ if(!r.fecha) return false; const k = fechaDiaCol(r.fecha); return k>=ini && k<=fin; };
+  if(ini >= anIniLocal()) return registros.filter(enRango);
+  const key = ini + '|' + fin;
+  if(anRemotoKey === key) return anRemoto.filter(enRango);
+  anCargarRemoto(ini, fin, key);
+  return registros.filter(enRango);   // mientras carga, muestra lo que ya hay
+}
+async function anCargarRemoto(ini, fin, key){
+  if(anCargando === key) return;
+  if(!SUPABASE_URL || !SUPABASE_KEY){ return; }
+  anCargando = key; const seq = ++anSeq;
+  anPintarLbl();
+  try{
+    const desde = new Date(ini+'T00:00:00-05:00').toISOString();
+    const hasta = new Date(new Date(fin+'T00:00:00-05:00').getTime()+86400000).toISOString();
+    let all = [], off = 0;
+    while(off < 20000){
+      const pg = await sbFetch('GET', `gastos?select=*&fecha=gte.${encodeURIComponent(desde)}&fecha=lt.${encodeURIComponent(hasta)}&order=fecha.desc&limit=1000&offset=${off}`);
+      all = all.concat(pg||[]); if(!pg || pg.length < 1000) break; off += 1000;
+    }
+    if(seq !== anSeq) return;
+    const borrados = _idsEliminados();
+    anRemoto = all.filter(r=>!borrados.has(String(r.id))); anRemotoKey = key;
+  }catch(e){ console.error('analisis rango', e); toast('No se pudo cargar el rango completo'); }
+  finally{ if(seq === anSeq) anCargando = false; }
+  if(document.getElementById('sc-analisis')?.classList.contains('active')) renderAnalisis();
+}
+function anRenderRangos(){
+  const box = document.getElementById('anRangos'); if(!box) return;
+  box.innerHTML = AN_RANGOS.map(([k,l])=>`<button class="oc-chip ${anRango===k?'on':''}" onclick="anSetRango('${k}')" aria-pressed="${anRango===k}">${k==='rango'?ic('calendar'):''}${l}</button>`).join('');
+  const boxR = document.getElementById('anRangoBox');
+  boxR.style.display = anRango==='rango' ? 'flex' : 'none';
+  if(anRango==='rango'){
+    const [a, b] = anLimites();
+    const d = document.getElementById('anDesde'), h = document.getElementById('anHasta');
+    if(!d.value) d.value = a; if(!h.value) h.value = b;
+  }
+  anPintarLbl();
+}
+function anPintarLbl(){
+  const el = document.getElementById('anRangoLbl'); if(!el) return;
+  const [a, b] = anLimites();
+  const f = k=>{ const [y,m,d] = k.split('-'); return `${parseInt(d)} ${OC_MESES[parseInt(m)-1]} ${y}`; };
+  const regs = (anRemotoKey===a+'|'+b || a>=anIniLocal()) ? anDatos() : null;
+  el.textContent = `${f(a)} – ${f(b)}` + (anCargando ? ' · cargando historial…' : regs ? ` · ${regs.length} movimientos` : '');
+}
+function anSetRango(k){
+  anRango = k; ocSave('oc_an_rango', k);
+  insightsCatActiva = null; anTagSel = null;
+  renderAnalisis();
+}
+function anCambioFechas(){
+  ocSave('oc_an_desde', document.getElementById('anDesde').value);
+  ocSave('oc_an_hasta', document.getElementById('anHasta').value);
+  insightsCatActiva = null; anTagSel = null;
+  renderAnalisis();
+}
+// ── Por etiqueta ──
+function anRenderTags(){
+  const cont = document.getElementById('tagsContent'); if(!cont) return;
+  const regs = anDatos();
+  const gastos = regs.filter(r=>r.tipo==='gasto');
+  const totalG = gastos.reduce((a,r)=>a+(parseInt(r.monto)||0),0);
+  const por = {};
+  regs.forEach(r=>{
+    const tags = [...new Set(ocTagsDe(r.descripcion))];
+    tags.forEach(t=>{
+      const o = por[t] = por[t] || { g:0, i:0, ng:0, ni:0, recs:[] };
+      const v = parseInt(r.monto)||0;
+      if(r.tipo==='ingreso'){ o.i+=v; o.ni++; } else { o.g+=v; o.ng++; }
+      o.recs.push(r);
+    });
+  });
+  const sinTag = gastos.filter(r=>!ocTagsDe(r.descripcion).length);
+  const sinTagTot = sinTag.reduce((a,r)=>a+(parseInt(r.monto)||0),0);
+  const orden = Object.entries(por).sort((a,b)=>b[1].g-a[1].g || b[1].i-a[1].i);
+  if(!orden.length){
+    cont.innerHTML = `<div class="empty-state" style="padding:18px 8px;"><div class="icon">${ic('tag')}</div><h3>Sin etiquetas en este período</h3><p>Usa "Seleccionar" en el historial para poner #viaje, #trabajo… a varios gastos de una vez.</p></div>`;
+    return;
+  }
+  if(anTagSel && !por[anTagSel]) anTagSel = null;
+  const maxG = Math.max(1, ...orden.map(([,o])=>o.g));
+  let html = `<div style="font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin-bottom:10px;">GASTO POR ETIQUETA <span style="font-weight:600;letter-spacing:0;">· toca para auditar</span></div>`;
+  html += orden.map(([t,o])=>{
+    const pct = totalG ? Math.round(o.g/totalG*100) : 0;
+    return `<div class="an-tag ${anTagSel===t?'sel':''}" onclick="anElegirTag('${S(t)}')">
+      <div class="t-top"><span class="t-n"><span class="oc-tag">#${S(t)}</span></span><span class="t-v" style="color:var(--danger);">${fmt(o.g)}</span></div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(o.g/maxG*100)}%;background:var(--primary)"></div></div>
+      <div class="t-s"><span>${o.ng} gasto${o.ng===1?'':'s'}${o.ni?` · ${o.ni} ingreso${o.ni===1?'':'s'} (+${fmt(o.i)})`:''}</span><span>${pct}% del gasto</span></div>
+    </div>`;
+  }).join('');
+  html += `<div class="t-s" style="font-size:12px;color:var(--text-3);display:flex;justify-content:space-between;padding:8px 10px 2px;"><span>Sin etiqueta · ${sinTag.length} gasto${sinTag.length===1?'':'s'}</span><span>${fmt(sinTagTot)}</span></div>`;
+  if(anTagSel){
+    const recs = por[anTagSel].recs.slice().sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+    const lim = 40;
+    html += `<div id="anTagHead" style="scroll-margin-top:150px;font-size:11px;font-weight:800;color:var(--text-3);letter-spacing:.5px;margin:16px 0 8px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <span>#${S(anTagSel).toUpperCase()} · ${recs.length} MOVIMIENTOS</span><button class="bd-clear ms-pill" onclick="msToggle()">Seleccionar</button></div>
+      <div class="feed">${recs.slice(0,lim).map(r=>renderTxRow(r)).join('')}</div>
+      ${recs.length>lim?`<div style="text-align:center;padding:10px;"><button class="bd-clear" onclick="ocBuscarTag('${S(anTagSel)}')">Ver los ${recs.length} en Buscar</button></div>`:''}`;
+  }
+  cont.innerHTML = html;
+}
+function anElegirTag(t){
+  const nuevo = anTagSel!==t;
+  anTagSel = nuevo ? t : null;
+  anRenderTags();
+  if(nuevo){ const h = document.getElementById('anTagHead'); if(h) setTimeout(()=>h.scrollIntoView({behavior:'smooth',block:'start'}), 60); }
+}
+// renderAnalisis ahora pinta el selector de período y la sección de etiquetas
+(function(){
+  const _ra = renderAnalisis;
+  renderAnalisis = function(){ anRenderRangos(); const out = _ra.apply(this, arguments); anRenderTags(); anPintarLbl(); return out; };
+})();
+// Tras un swipe/edición en Análisis, refresca también la sección de etiquetas
+(function(){
+  const _sr = swRefrescarAnalisis;
+  swRefrescarAnalisis = function(){ _sr(); if(document.getElementById('sc-analisis')?.classList.contains('active')){ try{ anRenderTags(); }catch(e){} } };
+})();
+// Registros traídos de Supabase para un rango antiguo: se pueden abrir, clasificar y editar
+function anAsegurar(id){
+  const k = String(id);
+  if(registros.some(x=>String(x.id)===k)) return;
+  const r = anRemoto.find(x=>String(x.id)===k); if(r) registros.push(r);
+}
+(function(){
+  const _ae = abrirEdit; abrirEdit = function(id){ anAsegurar(id); return _ae.apply(this, arguments); };
+  const _sc = swAbrirClasif; swAbrirClasif = function(id){ anAsegurar(id); return _sc.apply(this, arguments); };
+  const _er = editarRec; editarRec = async function(id, ch){
+    const out = await _er.apply(this, arguments);
+    const r = registros.find(x=>String(x.id)===String(id)); if(r) msActualizarLocal(id, r);
+    return out;
+  };
+  const _br = borrarRec; borrarRec = async function(id){
+    const out = await _br.apply(this, arguments);
+    anRemoto = anRemoto.filter(x=>String(x.id)!==String(id));
+    return out;
+  };
+})();
 </script>
 </body>
 </html>
